@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Olivia Studio</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2306122b'/%3E%3Ctext x='32' y='47' font-size='44' text-anchor='middle' fill='%23ffffff' font-family='Arial,Helvetica,sans-serif'%3E%E2%9C%B1%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { margin: 0; padding: 0; }
+
+  body {
+    margin: 0;
+    padding: 0;
+    color: #ffffff;
+    background: #06122b;
+    font-family: 'DM Sans', Arial, sans-serif;
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 100svh;
+    width: 100%;
+    color: #ffffff;
+  }
+
+  /* ---------- BACKGROUND VIDEO ---------- */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  #hero-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    pointer-events: none;
+    display: block;
+  }
+
+  /* ---------- FOREGROUND CHARACTER CANVAS ---------- */
+  #hero-character {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+    display: block;
+  }
+
+  /* ---------- NAVIGATION ---------- */
+  .nav {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2.15vw 2.58vw;
+    font-family: 'DM Sans', Arial, sans-serif;
+    font-weight: 400;
+    font-size: 1.13vw;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: .35vw;
+    white-space: nowrap;
+  }
+
+  .nav-left .star {
+    font-size: 1.35em;
+    line-height: 1;
+  }
+
+  .nav-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 3.9vw;
+    white-space: nowrap;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: .9vw;
+    white-space: nowrap;
+  }
+
+  .arrow-circle {
+    width: 2.25vw;
+    height: 2.25vw;
+    border: 1.5px solid #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .arrow-circle svg {
+    width: 55%;
+    height: 55%;
+    display: block;
+  }
+
+  /* ---------- HEADLINE ---------- */
+  .headline {
+    position: absolute;
+    left: 2.58vw;
+    top: 7vw;
+    margin: 0;
+    font-family: 'Anton', Impact, sans-serif;
+    font-weight: 400;
+    font-size: 23.5vw;
+    line-height: 1;
+    letter-spacing: 0;
+    white-space: nowrap;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  /* ---------- RIGHT TAGLINE ---------- */
+  .tagline {
+    position: absolute;
+    left: 71.5%;
+    top: 56.7%;
+    margin: 0;
+    font-family: 'DM Sans', Arial, sans-serif;
+    font-weight: 400;
+    font-size: 1.61vw;
+    line-height: 1.45;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  .tagline span { display: block; }
+  .tagline span:nth-child(2) { padding-left: 2.85vw; }
+
+  /* ---------- BOTTOM-LEFT DESCRIPTION ---------- */
+  .desc {
+    position: absolute;
+    left: 3.95vw;
+    bottom: 7.7vh;
+    margin: 0;
+    font-family: 'DM Sans', Arial, sans-serif;
+    font-weight: 400;
+    font-size: 1.075vw;
+    line-height: 1.75;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  .desc span { display: block; }
+  .desc span:nth-child(2) { padding-left: 3.6vw; }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 700px) {
+    .hero {
+      min-height: max(740px, 100svh);
+    }
+
+    .nav {
+      flex-wrap: wrap;
+      gap: 28px;
+      padding: 24px 20px 0;
+      font-size: 12px;
+    }
+
+    .nav-center {
+      position: static;
+      transform: none;
+      width: 100%;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .arrow-circle {
+      width: 28px;
+      height: 28px;
+    }
+
+    .headline {
+      top: 144px;
+      left: 2.58vw;
+      font-size: 23.5vw;
+    }
+
+    .tagline {
+      right: 22px;
+      left: auto;
+      top: 40%;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    .tagline span:nth-child(2) {
+      padding-left: 24px;
+    }
+
+    .desc {
+      left: 22px;
+      right: 22px;
+      bottom: 36px;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .desc span:nth-child(2) {
+      padding-left: 20px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .nav {
+      padding-left: 16px;
+      padding-right: 16px;
+      font-size: 11px;
+    }
+
+    .desc {
+      left: 16px;
+      right: 16px;
+      font-size: 11px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<main class="hero">
+
+  <div class="hero-bg">
+    <video
+      id="hero-video"
+      muted
+      playsinline
+      preload="auto"
+      poster="./public/hero-poster.jpg"></video>
+  </div>
+
+  <canvas id="hero-character" width="1920" height="1080"></canvas>
+
+  <header class="nav">
+    <div class="nav-left">
+      <span class="star">✱</span>
+      <span>OLIVIA STUDIO</span>
+    </div>
+
+    <nav class="nav-center">
+      <span>PROJECTS</span>
+      <span>BLOG</span>
+      <span>ABOUT</span>
+      <span>RESUME</span>
+    </nav>
+
+    <div class="nav-right">
+      <span>// HIRE ME</span>
+      <span class="arrow-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 18 18 6M7 6h11v11"></path>
+        </svg>
+      </span>
+    </div>
+  </header>
+
+  <h1 class="headline">HAVENORBI</h1>
+
+  <p class="tagline">
+    <span>// DESIGN THAT</span>
+    <span>SPEAKS YOUR BRAND</span>
+  </p>
+
+  <p class="desc">
+    <span>// I’M OLIVIA — A FREELANCE UI/UX DESIGNER</span>
+    <span>HELPING STARTUPS AND BUSINESSES BUILD</span>
+    <span>CLEAN, INTUITIVE DIGITAL PRODUCTS.</span>
+  </p>
+
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ------------------------------------------------------------------
+     CONSTANTS
+  ------------------------------------------------------------------ */
+  var CLOUD_MP4 =
+    'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260909_102143_0afe0d98-f953-49c3-87c3-cc9b77a9fcd8.mp4';
+
+  var SRC_W = 1920;
+  var SRC_H = 1080;
+
+  var EYE_X = 922;
+  var EYE_Y = 507;
+
+  var CAL = [
+    [0.140436, 1.83333], [0.272074, 1.875],   [0.37721, 1.91667],
+    [0.487211, 1.95833], [0.758188, 2],       [1.03816, 0.29167],
+    [1.291266, 0.33333], [1.29251, 0.25],     [1.531114, 0.375],
+    [1.748845, 0.41667], [1.914354, 0.45833], [2.135974, 0.5],
+    [2.297991, 0.54167], [2.424228, 0.58333], [2.628603, 0.625],
+    [2.795553, 0.66667], [2.908785, 0.70833], [3.044833, 0.75],
+    [3.145293, 0.79167], [3.38155, 0.83333],  [3.539566, 0.875],
+    [3.681233, 0.91667], [3.830669, 0.95833], [4.018275, 1],
+    [4.15919, 1.04167],  [4.284155, 1.08333], [4.381621, 1.125],
+    [4.551081, 1.16667], [4.625911, 1.20833], [4.726682, 1.25],
+    [4.804165, 1.29167], [4.920395, 1.33333], [5.015693, 1.375],
+    [5.109664, 1.41667], [5.191176, 1.45833], [5.37081, 1.5],
+    [5.453795, 1.54167], [5.537064, 1.58333], [5.663308, 1.625],
+    [5.858054, 1.66667], [5.962517, 1.70833], [6.064804, 1.75],
+    [6.194798, 1.79167]
+  ];
+
+  var CHARACTER_D =
+    'M 738 451 ' +
+    'C 755 394 803 345 865 327 ' +
+    'C 927 308 1000 321 1045 352 ' +
+    'C 1096 386 1123 444 1124 489 ' +
+    'L 1130 489 ' +
+    'C 1140 505 1141 532 1134 550 ' +
+    'L 1116 551 ' +
+    'C 1111 577 1107 597 1095 611 ' +
+    'Q 1110 611 1106 630 ' +
+    'L 1101 650 ' +
+    'C 1111 669 1113 693 1118 727 ' +
+    'C 1124 751 1117 782 1106 795 ' +
+    'Q 1092 808 1069 800 ' +
+    'L 1058 838 L 1055 878 ' +
+    'Q 1004 886 934 881 ' +
+    'L 929 836 L 921 836 L 920 879 ' +
+    'Q 862 887 800 880 ' +
+    'L 798 832 ' +
+    'C 783 835 778 819 775 809 ' +
+    'L 762 837 ' +
+    'Q 753 858 739 847 ' +
+    'Q 730 839 743 815 ' +
+    'L 754 785 ' +
+    'Q 726 786 716 774 ' +
+    'L 718 743 ' +
+    'C 705 730 710 691 727 672 ' +
+    'L 748 654 ' +
+    'Q 740 642 747 631 ' +
+    'L 751 613 ' +
+    'C 741 598 736 574 737 550 ' +
+    'L 694 556 L 704 535 ' +
+    'C 670 533 644 510 640 482 ' +
+    'C 632 455 649 428 674 418 ' +
+    'C 700 406 727 416 739 433 Z';
+
+  var TUBE_THIN_D  = 'M 703 550 C 696 600 701 639 744 660';
+  var TUBE_THICK_D = 'M 813 752 C 797 774 786 811 776 836 ' +
+                     'M 1040 763 C 1052 797 1060 826 1068 847';
+
+  var characterPath = new Path2D(CHARACTER_D);
+  var tubeThin = new Path2D(TUBE_THIN_D);
+  var tubeThick = new Path2D(TUBE_THICK_D);
+
+  /* ------------------------------------------------------------------
+     ELEMENTS
+  ------------------------------------------------------------------ */
+  var video = document.getElementById('hero-video');
+  var canvas = document.getElementById('hero-character');
+  if (!video || !canvas) return;
+
+  var ctx = canvas.getContext('2d');
+
+  var matte = document.createElement('canvas');
+  var mctx = matte.getContext('2d');
+
+  video.muted = true;
+  video.playsInline = true;
+  video.setAttribute('muted', '');
+  video.setAttribute('playsinline', '');
+  video.setAttribute('webkit-playsinline', '');
+
+  /* ------------------------------------------------------------------
+     MEDIA QUERIES
+  ------------------------------------------------------------------ */
+  var mqMobile = window.matchMedia('(max-width: 700px)');
+  var mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* ------------------------------------------------------------------
+     SOURCES
+  ------------------------------------------------------------------ */
+  var sources = {
+    desktop: CLOUD_MP4,
+    mobile: CLOUD_MP4
+  };
+
+  var activeSrc = null;
+
+  function tryBlobURL(url) {
+    return fetch(url, { cache: 'force-cache' })
+      .then(function (res) {
+        if (!res.ok) return null;
+        var ct = res.headers.get('content-type') || '';
+        if (ct && !/video|octet-stream|mp4/i.test(ct)) return null;
+        return res.blob();
+      })
+      .then(function (blob) {
+        if (!blob || blob.size < 1024) return null;
+        return URL.createObjectURL(blob);
+      })
+      .catch(function () { return null; });
+  }
+
+  function resolveSources() {
+    if (location.protocol === 'file:') {
+      // Browsers block local fetch calls — use the files directly.
+      sources.desktop = './public/hero-scrub.mp4';
+      sources.mobile = './public/hero-background.mp4';
+      return Promise.resolve();
+    }
+
+    return Promise.all([
+      tryBlobURL('./public/hero-scrub.mp4'),
+      tryBlobURL('./public/hero-background.mp4')
+    ]).then(function (results) {
+      if (results[0]) sources.desktop = results[0];
+      if (results[1]) sources.mobile = results[1];
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     CANVAS SIZING
+  ------------------------------------------------------------------ */
+  function resizeCanvas() {
+    var rect = video.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = Math.max(1, Math.round(rect.width * dpr));
+    var h = Math.max(1, Math.round(rect.height * dpr));
+
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w;
+      canvas.height = h;
+      matte.width = w;
+      matte.height = h;
+    }
+  }
+
+  /* ------------------------------------------------------------------
+     DRAW
+  ------------------------------------------------------------------ */
+  var lastDrawnTime = -1;
+
+  function draw() {
+    var rect = video.getBoundingClientRect();
+    var W = rect.width;
+    var H = rect.height;
+    if (!W || !H) return;
+
+    var dpr = canvas.width / W;
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (video.readyState < 2) return;
+
+    var scale = Math.max(W / SRC_W, H / SRC_H);
+    var dw = SRC_W * scale;
+    var dh = SRC_H * scale;
+    var dx = (W - dw) / 2;
+    var dy = (H - dh) / 2;
+
+    /* 1. background frame */
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    try {
+      ctx.drawImage(video, dx, dy, dw, dh);
+    } catch (e) {
+      return;
+    }
+
+    /* 2. build the character matte on an offscreen canvas */
+    mctx.setTransform(1, 0, 0, 1, 0, 0);
+    mctx.globalCompositeOperation = 'source-over';
+    mctx.clearRect(0, 0, matte.width, matte.height);
+
+    mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    mctx.save();
+    mctx.translate(dx, dy);
+    mctx.scale(scale, scale);
+
+    mctx.filter = 'blur(0.7px)';
+    mctx.fillStyle = '#ffffff';
+    mctx.fill(characterPath);
+
+    mctx.strokeStyle = '#ffffff';
+    mctx.lineJoin = 'round';
+    mctx.lineCap = 'round';
+
+    mctx.lineWidth = 8;
+    mctx.stroke(tubeThin);
+
+    mctx.lineWidth = 20;
+    mctx.stroke(tubeThick);
+
+    mctx.restore();
+    mctx.filter = 'none';
+
+    /* 3. punch the matte through the frame */
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.drawImage(matte, 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  function maybeDraw() {
+    if (video.currentTime !== lastDrawnTime) {
+      lastDrawnTime = video.currentTime;
+      draw();
+    }
+  }
+
+  function forceDraw() {
+    lastDrawnTime = video.currentTime;
+    draw();
+  }
+
+  /* ------------------------------------------------------------------
+     FRAME REFRESH
+  ------------------------------------------------------------------ */
+  function rafLoop() {
+    maybeDraw();
+    requestAnimationFrame(rafLoop);
+  }
+
+  function onVideoFrame() {
+    maybeDraw();
+    if (video.requestVideoFrameCallback) {
+      video.requestVideoFrameCallback(onVideoFrame);
+    }
+  }
+
+  /* ------------------------------------------------------------------
+     CURSOR -> EYE SEEKING
+  ------------------------------------------------------------------ */
+  var pointerX = null;
+  var pointerY = null;
+  var seekRaf = null;
+
+  function angularDistance(a, b) {
+    var d = Math.abs(a - b);
+    if (d > Math.PI) d = Math.PI * 2 - d;
+    return d;
+  }
+
+  function scheduleSeek() {
+    if (seekRaf === null) {
+      seekRaf = requestAnimationFrame(processSeek);
+    }
+  }
+
+  function processSeek() {
+    seekRaf = null;
+
+    if (mqMobile.matches) return;
+    if (pointerX === null || pointerY === null) return;
+    if (video.readyState < 1) return;
+    if (!isFinite(video.duration) || video.duration <= 0) return;
+
+    var rect = video.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    var scale = Math.max(rect.width / SRC_W, rect.height / SRC_H);
+
+    var eyeX = rect.left + rect.width / 2 + (EYE_X - SRC_W / 2) * scale;
+    var eyeY = rect.top + rect.height / 2 + (EYE_Y - SRC_H / 2) * scale;
+
+    var ddx = pointerX - eyeX;
+    var ddy = pointerY - eyeY;
+
+    if (Math.sqrt(ddx * ddx + ddy * ddy) < 8) return;
+
+    var angle = Math.atan2(ddy, ddx);
+    if (angle < 0) angle += Math.PI * 2;
+
+    var bestTime = CAL[0][1];
+    var bestDist = Infinity;
+
+    for (var i = 0; i < CAL.length; i++) {
+      var d = angularDistance(angle, CAL[i][0]);
+      if (d < bestDist) {
+        bestDist = d;
+        bestTime = CAL[i][1];
+      }
+    }
+
+    var target = bestTime + 1 / 240;
+    var maxTime = Math.max(0, video.duration - 1 / 24);
+    if (target > maxTime) target = maxTime;
+    if (target < 0) target = 0;
+
+    if (video.seeking) {
+      scheduleSeek();
+      return;
+    }
+
+    if (Math.abs(video.currentTime - target) > 1 / 48) {
+      try { video.currentTime = target; } catch (e) {}
+    }
+  }
+
+  /* ------------------------------------------------------------------
+     MODE HANDLING
+  ------------------------------------------------------------------ */
+  function applyMode() {
+    var isMobile = mqMobile.matches;
+    var reduced = mqReduce.matches;
+    var src = isMobile ? sources.mobile : sources.desktop;
+
+    if (activeSrc !== src) {
+      activeSrc = src;
+      video.src = src;
+      try { video.load(); } catch (e) {}
+    }
+
+    if (isMobile) {
+      video.loop = true;
+      if (reduced) {
+        video.pause();
+      } else {
+        var p = video.play();
+        if (p && typeof p.catch === 'function') p.catch(function () {});
+      }
+    } else {
+      video.loop = false;
+      video.pause();
+    }
+  }
+
+  /* ------------------------------------------------------------------
+     EVENTS
+  ------------------------------------------------------------------ */
+  window.addEventListener('pointermove', function (e) {
+    if (mqMobile.matches) return;
+    pointerX = e.clientX;
+    pointerY = e.clientY;
+    scheduleSeek();
+  }, { passive: true });
+
+  window.addEventListener('resize', function () {
+    resizeCanvas();
+    forceDraw();
+    if (!mqMobile.matches) scheduleSeek();
+  }, { passive: true });
+
+  window.addEventListener('scroll', function () {
+    if (!mqMobile.matches) scheduleSeek();
+  }, { passive: true });
+
+  window.addEventListener('pageshow', function () {
+    resizeCanvas();
+    forceDraw();
+    if (!mqMobile.matches) scheduleSeek();
+  });
+
+  video.addEventListener('loadeddata', forceDraw);
+  video.addEventListener('seeked', forceDraw);
+  video.addEventListener('loadedmetadata', forceDraw);
+  video.addEventListener('canplay', forceDraw);
+
+  var onModeChange = function () {
+    applyMode();
+    resizeCanvas();
+    forceDraw();
+  };
+
+  if (typeof mqMobile.addEventListener === 'function') {
+    mqMobile.addEventListener('change', onModeChange);
+    mqReduce.addEventListener('change', onModeChange);
+  } else if (typeof mqMobile.addListener === 'function') {
+    mqMobile.addListener(onModeChange);
+    mqReduce.addListener(onModeChange);
+  }
+
+  /* ------------------------------------------------------------------
+     BOOT
+  ------------------------------------------------------------------ */
+  resizeCanvas();
+
+  resolveSources().then(function () {
+    applyMode();
+    resizeCanvas();
+    forceDraw();
+  }).catch(function () {
+    applyMode();
+    resizeCanvas();
+    forceDraw();
+  });
+
+  requestAnimationFrame(rafLoop);
+
+  if (video.requestVideoFrameCallback) {
+    video.requestVideoFrameCallback(onVideoFrame);
+  }
+})();
+</script>
+
+</body>
+</html>
