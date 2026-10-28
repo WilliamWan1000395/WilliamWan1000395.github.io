@@ -386,7 +386,9 @@
   if (!video || !canvas) return;
 
   var ctx = canvas.getContext('2d');
+  if (!ctx) return;
 
+  /* 离屏 matte 画布：只在尺寸/DPR 变化时重建一次 */
   var matte = document.createElement('canvas');
   var mctx = matte.getContext('2d');
 
@@ -401,6 +403,18 @@
   ------------------------------------------------------------------ */
   var mqMobile = window.matchMedia('(max-width: 700px)');
   var mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* ------------------------------------------------------------------
+     POSTER
+  ------------------------------------------------------------------ */
+  var poster = new Image();
+  var posterReady = false;
+  var everDrewVideo = false;
+  poster.onload = function () {
+    posterReady = true;
+    if (!everDrewVideo) draw();
+  };
+  poster.src = './public/hero-poster.jpg';
 
   /* ------------------------------------------------------------------
      SOURCES
@@ -429,7 +443,6 @@
 
   function resolveSources() {
     if (location.protocol === 'file:') {
-      // Browsers block local fetch calls — use the files directly.
       sources.desktop = './public/hero-scrub.mp4';
       sources.mobile = './public/hero-background.mp4';
       return Promise.resolve();
@@ -445,11 +458,32 @@
   }
 
   /* ------------------------------------------------------------------
-     CANVAS SIZING
+     GEOMETRY (video 的 object-fit:cover 映射)
+  ------------------------------------------------------------------ */
+  function getGeometry() {
+    var rect = video.getBoundingClientRect();
+    if (!rect.width || !rect.height) return null;
+    var scale = Math.max(rect.width / SRC_W, rect.height / SRC_H);
+    var dw = SRC_W * scale;
+    var dh = SRC_H * scale;
+    return {
+      rect: rect,
+      W: rect.width,
+      H: rect.height,
+      scale: scale,
+      dw: dw,
+      dh: dh,
+      dx: (rect.width - dw) / 2,
+      dy: (rect.height - dh) / 2
+    };
+  }
+
+  /* ------------------------------------------------------------------
+     CANVAS / MATTE 尺寸
   ------------------------------------------------------------------ */
   function resizeCanvas() {
     var rect = video.getBoundingClientRect();
-    if (!rect.width || !rect.height) return;
+    if (!rect.width || !rect.height) return false;
 
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var w = Math.max(1, Math.round(rect.width * dpr));
@@ -458,58 +492,38 @@
     if (canvas.width !== w || canvas.height !== h) {
       canvas.width = w;
       canvas.height = h;
-      matte.width = w;
-      matte.height = h;
+      buildMatte();
+      return true;
     }
+    return false;
   }
 
-  /* ------------------------------------------------------------------
-     DRAW
-  ------------------------------------------------------------------ */
-  var lastDrawnTime = -1;
+  /* 只在这里做 fill + blur + stroke，避免每帧重建 */
+  function buildMatte() {
+    var geo = getGeometry();
+    if (!geo) return;
 
-  function draw() {
-    var rect = video.getBoundingClientRect();
-    var W = rect.width;
-    var H = rect.height;
-    if (!W || !H) return;
-
-    var dpr = canvas.width / W;
-
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (video.readyState < 2) return;
-
-    var scale = Math.max(W / SRC_W, H / SRC_H);
-    var dw = SRC_W * scale;
-    var dh = SRC_H * scale;
-    var dx = (W - dw) / 2;
-    var dy = (H - dh) / 2;
-
-    /* 1. background frame */
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    try {
-      ctx.drawImage(video, dx, dy, dw, dh);
-    } catch (e) {
-      return;
+    if (matte.width !== canvas.width || matte.height !== canvas.height) {
+      matte.width = canvas.width;
+      matte.height = canvas.height;
     }
 
-    /* 2. build the character matte on an offscreen canvas */
+    var dpr = canvas.width / geo.W;
+
     mctx.setTransform(1, 0, 0, 1, 0, 0);
     mctx.globalCompositeOperation = 'source-over';
     mctx.clearRect(0, 0, matte.width, matte.height);
 
     mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     mctx.save();
-    mctx.translate(dx, dy);
-    mctx.scale(scale, scale);
+    mctx.translate(geo.dx, geo.dy);
+    mctx.scale(geo.scale, geo.scale);
 
     mctx.filter = 'blur(0.7px)';
     mctx.fillStyle = '#ffffff';
     mctx.fill(characterPath);
 
+    mctx.filter = 'none';
     mctx.strokeStyle = '#ffffff';
     mctx.lineJoin = 'round';
     mctx.lineCap = 'round';
@@ -522,40 +536,81 @@
 
     mctx.restore();
     mctx.filter = 'none';
+  }
 
-    /* 3. punch the matte through the frame */
+  /* ------------------------------------------------------------------
+     DRAW
+  ------------------------------------------------------------------ */
+  function draw() {
+    if (!canvas.width || !canvas.height) return;
+
+    var geo = getGeometry();
+    if (!geo) return;
+
+    var source = null;
+
+    if (video.readyState >= 2 && video.videoWidth > 0) {
+      source = video;
+      everDrewVideo = true;
+    } else if (!everDrewVideo && posterReady) {
+      /* 仅在还没有任何有效视频帧时用 poster 兜底 */
+      source = poster;
+    }
+
+    /* 没有可用帧：保留 canvas 上一帧，避免闪白/闪空 */
+    if (!source) return;
+
+    var dpr = canvas.width / geo.W;
+
+    /* 1) 画整帧 */
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    try {
+      ctx.drawImage(source, geo.dx, geo.dy, geo.dw, geo.dh);
+    } catch (e) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      return;
+    }
+
+    /* 2) 用缓存的 matte 打孔 */
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalCompositeOperation = 'destination-in';
     ctx.drawImage(matte, 0, 0);
     ctx.globalCompositeOperation = 'source-over';
   }
 
-  function maybeDraw() {
-    if (video.currentTime !== lastDrawnTime) {
-      lastDrawnTime = video.currentTime;
-      draw();
-    }
-  }
-
-  function forceDraw() {
-    lastDrawnTime = video.currentTime;
-    draw();
-  }
-
   /* ------------------------------------------------------------------
-     FRAME REFRESH
+     FRAME SYNC
+     rVFC 在“帧被呈现”时回调 → canvas 与 <video> 使用同一帧
   ------------------------------------------------------------------ */
+  var usingRVFC = typeof video.requestVideoFrameCallback === 'function';
+
+  function onVideoFrame() {
+    draw();
+    video.requestVideoFrameCallback(onVideoFrame);
+  }
+
+  if (usingRVFC) {
+    video.requestVideoFrameCallback(onVideoFrame);
+  }
+
+  /* rAF 兜底：仅当没有 rVFC，且不在 seeking 中、currentTime 真的变了才画 */
+  var lastRafTime = -1;
+
   function rafLoop() {
-    maybeDraw();
+    if (!usingRVFC) {
+      if (!video.seeking && video.currentTime !== lastRafTime) {
+        lastRafTime = video.currentTime;
+        draw();
+      }
+    }
     requestAnimationFrame(rafLoop);
   }
 
-  function onVideoFrame() {
-    maybeDraw();
-    if (video.requestVideoFrameCallback) {
-      video.requestVideoFrameCallback(onVideoFrame);
-    }
-  }
+  requestAnimationFrame(rafLoop);
 
   /* ------------------------------------------------------------------
      CURSOR -> EYE SEEKING
@@ -581,16 +636,15 @@
 
     if (mqMobile.matches) return;
     if (pointerX === null || pointerY === null) return;
+    if (video.seeking) return;              /* seeked 后会重新调度 */
     if (video.readyState < 1) return;
     if (!isFinite(video.duration) || video.duration <= 0) return;
 
-    var rect = video.getBoundingClientRect();
-    if (!rect.width || !rect.height) return;
+    var geo = getGeometry();
+    if (!geo) return;
 
-    var scale = Math.max(rect.width / SRC_W, rect.height / SRC_H);
-
-    var eyeX = rect.left + rect.width / 2 + (EYE_X - SRC_W / 2) * scale;
-    var eyeY = rect.top + rect.height / 2 + (EYE_Y - SRC_H / 2) * scale;
+    var eyeX = geo.rect.left + geo.W / 2 + (EYE_X - SRC_W / 2) * geo.scale;
+    var eyeY = geo.rect.top + geo.H / 2 + (EYE_Y - SRC_H / 2) * geo.scale;
 
     var ddx = pointerX - eyeX;
     var ddy = pointerY - eyeY;
@@ -615,11 +669,6 @@
     var maxTime = Math.max(0, video.duration - 1 / 24);
     if (target > maxTime) target = maxTime;
     if (target < 0) target = 0;
-
-    if (video.seeking) {
-      scheduleSeek();
-      return;
-    }
 
     if (Math.abs(video.currentTime - target) > 1 / 48) {
       try { video.currentTime = target; } catch (e) {}
@@ -665,8 +714,12 @@
   }, { passive: true });
 
   window.addEventListener('resize', function () {
-    resizeCanvas();
-    forceDraw();
+    if (resizeCanvas()) {
+      /* 尺寸变化 → matte 重建 → 重画 */
+      draw();
+    } else {
+      draw();
+    }
     if (!mqMobile.matches) scheduleSeek();
   }, { passive: true });
 
@@ -676,19 +729,24 @@
 
   window.addEventListener('pageshow', function () {
     resizeCanvas();
-    forceDraw();
+    draw();
     if (!mqMobile.matches) scheduleSeek();
   });
 
-  video.addEventListener('loadeddata', forceDraw);
-  video.addEventListener('seeked', forceDraw);
-  video.addEventListener('loadedmetadata', forceDraw);
-  video.addEventListener('canplay', forceDraw);
+  video.addEventListener('loadeddata', function () { draw(); });
+  video.addEventListener('loadedmetadata', function () { draw(); });
+  video.addEventListener('canplay', function () { draw(); });
+
+  /* seek 结束后：重画当前呈现帧，并用最后的指针位置再算一次目标 */
+  video.addEventListener('seeked', function () {
+    draw();
+    if (!mqMobile.matches && pointerX !== null) scheduleSeek();
+  });
 
   var onModeChange = function () {
     applyMode();
     resizeCanvas();
-    forceDraw();
+    draw();
   };
 
   if (typeof mqMobile.addEventListener === 'function') {
@@ -707,18 +765,12 @@
   resolveSources().then(function () {
     applyMode();
     resizeCanvas();
-    forceDraw();
+    draw();
   }).catch(function () {
     applyMode();
     resizeCanvas();
-    forceDraw();
+    draw();
   });
-
-  requestAnimationFrame(rafLoop);
-
-  if (video.requestVideoFrameCallback) {
-    video.requestVideoFrameCallback(onVideoFrame);
-  }
 })();
 </script>
 
