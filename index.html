@@ -11,7 +11,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; }
 
-  html { margin: 0; padding: 0; }
+  html { margin: 0; padding: 0; scroll-behavior: smooth; }
 
   body {
     margin: 0;
@@ -83,6 +83,8 @@
     align-items: center;
     gap: .35vw;
     white-space: nowrap;
+    color: #ffffff;
+    text-decoration: none;
   }
 
   .nav-left .star {
@@ -100,11 +102,23 @@
     white-space: nowrap;
   }
 
+  .nav-center a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .nav-center a:hover {
+    opacity: 0.7;
+  }
+
   .nav-right {
     display: flex;
     align-items: center;
     gap: .9vw;
     white-space: nowrap;
+    color: #ffffff;
+    text-decoration: none;
   }
 
   .arrow-circle {
@@ -279,6 +293,33 @@
       font-size: 11px;
     }
   }
+
+  /* ---------- ANCHOR PLACEHOLDERS ---------- */
+  .anchor-section {
+    position: relative;
+    min-height: 60vh;
+    padding: 10vh 2.58vw;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    background: #06122b;
+    color: #ffffff;
+  }
+
+  .anchor-section h2 {
+    margin: 0 0 1rem;
+    font-family: 'Anton', Impact, sans-serif;
+    font-weight: 400;
+    font-size: 6vw;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .anchor-section p {
+    margin: 0;
+    max-width: 60ch;
+    font-size: 1rem;
+    line-height: 1.7;
+    opacity: 0.8;
+  }
 </style>
 </head>
 <body>
@@ -297,19 +338,19 @@
   <canvas id="hero-character" width="1920" height="1080"></canvas>
 
   <header class="nav">
-    <div class="nav-left">
+    <a class="nav-left" href="#top">
       <span class="star">✱</span>
       <span>WILLIAM STUDIO</span>
-    </div>
+    </a>
 
     <nav class="nav-center">
-      <span>PROJECTS</span>
-      <span>BLOG</span>
-      <span>ABOUT</span>
-      <span>RESUME</span>
+      <a href="#projects">PROJECTS</a>
+      <a href="#blog">BLOG</a>
+      <a href="#about">ABOUT</a>
+      <a href="#resume">RESUME</a>
     </nav>
 
-    <div class="nav-right">
+    <a class="nav-right" href="mailto:hello@william.studio">
       <span>// HIRE ME</span>
       <span class="arrow-circle">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -317,11 +358,12 @@
           <path d="M6 18 18 6M7 6h11v11"></path>
         </svg>
       </span>
-    </div>
+    </a>
   </header>
 
   <h1 class="headline">WILLIAM</h1>
 
+  <!-- About Me 副标题：不带名字 -->
   <p class="subline">
     <span>// ABOUT ME — FREELANCE UI/UX DESIGNER</span>
     <span>BASED IN SHANGHAI, WORKING WORLDWIDE</span>
@@ -339,6 +381,27 @@
   </p>
 
 </main>
+
+<!-- ===== 锚点落点区块 ===== -->
+<section class="anchor-section" id="projects">
+  <h2>Projects</h2>
+  <p>Selected works by William — coming soon.</p>
+</section>
+
+<section class="anchor-section" id="blog">
+  <h2>Blog</h2>
+  <p>Notes on design, process, and product thinking.</p>
+</section>
+
+<section class="anchor-section" id="about">
+  <h2>About</h2>
+  <p>William is a freelance UI/UX designer helping startups and businesses build clean, intuitive digital products.</p>
+</section>
+
+<section class="anchor-section" id="resume">
+  <h2>Resume</h2>
+  <p>Experience and education — available on request.</p>
+</section>
 
 <script>
 (function () {
@@ -428,7 +491,6 @@
   var ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  /* 离屏 matte 画布：只在尺寸/DPR 变化时重建一次 */
   var matte = document.createElement('canvas');
   var mctx = matte.getContext('2d');
 
@@ -498,7 +560,7 @@
   }
 
   /* ------------------------------------------------------------------
-     GEOMETRY (video 的 object-fit:cover 映射)
+     GEOMETRY
   ------------------------------------------------------------------ */
   function getGeometry() {
     var rect = video.getBoundingClientRect();
@@ -519,7 +581,7 @@
   }
 
   /* ------------------------------------------------------------------
-     CANVAS / MATTE 尺寸
+     CANVAS / MATTE
   ------------------------------------------------------------------ */
   function resizeCanvas() {
     var rect = video.getBoundingClientRect();
@@ -538,7 +600,6 @@
     return false;
   }
 
-  /* 只在这里做 fill + blur + stroke，避免每帧重建 */
   function buildMatte() {
     var geo = getGeometry();
     if (!geo) return;
@@ -593,16 +654,13 @@
       source = video;
       everDrewVideo = true;
     } else if (!everDrewVideo && posterReady) {
-      /* 仅在还没有任何有效视频帧时用 poster 兜底 */
       source = poster;
     }
 
-    /* 没有可用帧：保留 canvas 上一帧，避免闪白/闪空 */
     if (!source) return;
 
     var dpr = canvas.width / geo.W;
 
-    /* 1) 画整帧 */
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalCompositeOperation = 'source-over';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -615,7 +673,6 @@
       return;
     }
 
-    /* 2) 用缓存的 matte 打孔 */
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalCompositeOperation = 'destination-in';
     ctx.drawImage(matte, 0, 0);
@@ -624,7 +681,6 @@
 
   /* ------------------------------------------------------------------
      FRAME SYNC
-     rVFC 在“帧被呈现”时回调 → canvas 与 <video> 使用同一帧
   ------------------------------------------------------------------ */
   var usingRVFC = typeof video.requestVideoFrameCallback === 'function';
 
@@ -637,7 +693,6 @@
     video.requestVideoFrameCallback(onVideoFrame);
   }
 
-  /* rAF 兜底：仅当没有 rVFC，且不在 seeking 中、currentTime 真的变了才画 */
   var lastRafTime = -1;
 
   function rafLoop() {
@@ -676,7 +731,7 @@
 
     if (mqMobile.matches) return;
     if (pointerX === null || pointerY === null) return;
-    if (video.seeking) return;              /* seeked 后会重新调度 */
+    if (video.seeking) return;
     if (video.readyState < 1) return;
     if (!isFinite(video.duration) || video.duration <= 0) return;
 
@@ -754,12 +809,8 @@
   }, { passive: true });
 
   window.addEventListener('resize', function () {
-    if (resizeCanvas()) {
-      /* 尺寸变化 → matte 重建 → 重画 */
-      draw();
-    } else {
-      draw();
-    }
+    resizeCanvas();
+    draw();
     if (!mqMobile.matches) scheduleSeek();
   }, { passive: true });
 
@@ -777,7 +828,6 @@
   video.addEventListener('loadedmetadata', function () { draw(); });
   video.addEventListener('canplay', function () { draw(); });
 
-  /* seek 结束后：重画当前呈现帧，并用最后的指针位置再算一次目标 */
   video.addEventListener('seeked', function () {
     draw();
     if (!mqMobile.matches && pointerX !== null) scheduleSeek();
