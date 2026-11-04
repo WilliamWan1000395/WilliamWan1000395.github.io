@@ -11,7 +11,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; }
 
-  html { margin: 0; padding: 0; scroll-behavior: smooth; }
+  html { margin: 0; padding: 0; }
 
   body {
     margin: 0;
@@ -22,6 +22,7 @@
     font-synthesis: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
   }
 
   .hero {
@@ -207,6 +208,133 @@
   .desc span { display: block; }
   .desc span:nth-child(2) { padding-left: 3.6vw; }
 
+  /* ---------- PANEL LAYER (点击导航打开的内容面板) ---------- */
+  .panel-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4vw;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+
+  .panel-layer.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .panel-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(6, 18, 43, 0.9);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .panel {
+    position: relative;
+    width: min(860px, 100%);
+    max-height: 82svh;
+    overflow-y: auto;
+    padding: 4vw 4vw 4.5vw;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: #06122b;
+    color: #ffffff;
+    display: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,.3) transparent;
+  }
+
+  .panel.is-active { display: block; }
+
+  .panel::-webkit-scrollbar { width: 6px; }
+  .panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,.3); }
+
+  .panel-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    background: transparent;
+    color: #ffffff;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .panel-close:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #ffffff;
+  }
+
+  .panel-kicker {
+    display: block;
+    font-family: 'DM Sans', Arial, sans-serif;
+    font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    margin-bottom: 1.6rem;
+  }
+
+  .panel-title {
+    margin: 0 0 2rem;
+    font-family: 'Anton', Impact, sans-serif;
+    font-weight: 400;
+    font-size: clamp(2.6rem, 5.2vw, 4.4rem);
+    line-height: 1;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  .panel-body p {
+    margin: 0 0 1.35em;
+    max-width: 62ch;
+    font-size: clamp(0.95rem, 1.02vw, 1.02rem);
+    line-height: 1.8;
+    opacity: 0.85;
+  }
+
+  .panel-body p:last-child { margin-bottom: 0; }
+
+  .panel-item {
+    margin: 0 0 2rem;
+    padding: 0;
+  }
+
+  .panel-item:last-child { margin-bottom: 0; }
+
+  .panel-item h3 {
+    margin: 0 0 0.4rem;
+    font-family: 'DM Sans', Arial, sans-serif;
+    font-weight: 400;
+    font-size: clamp(0.9rem, 1vw, 1rem);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  .panel-item p {
+    margin: 0;
+    max-width: 62ch;
+    font-size: clamp(0.9rem, 0.98vw, 0.98rem);
+    line-height: 1.75;
+    opacity: 0.72;
+  }
+
   /* ---------- MOBILE ---------- */
   @media (max-width: 700px) {
     .hero {
@@ -273,6 +401,25 @@
     .desc span:nth-child(2) {
       padding-left: 20px;
     }
+
+    .panel-layer {
+      padding: 0;
+    }
+
+    .panel {
+      width: 100%;
+      max-height: 100svh;
+      height: 100svh;
+      border: none;
+      padding: 72px 24px 48px;
+    }
+
+    .panel-close {
+      top: 18px;
+      right: 18px;
+      width: 36px;
+      height: 36px;
+    }
   }
 
   @media (max-width: 360px) {
@@ -292,33 +439,10 @@
       right: 16px;
       font-size: 11px;
     }
-  }
 
-  /* ---------- ANCHOR PLACEHOLDERS ---------- */
-  .anchor-section {
-    position: relative;
-    min-height: 60vh;
-    padding: 10vh 2.58vw;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-    background: #06122b;
-    color: #ffffff;
-  }
-
-  .anchor-section h2 {
-    margin: 0 0 1rem;
-    font-family: 'Anton', Impact, sans-serif;
-    font-weight: 400;
-    font-size: 6vw;
-    line-height: 1;
-    text-transform: uppercase;
-  }
-
-  .anchor-section p {
-    margin: 0;
-    max-width: 60ch;
-    font-size: 1rem;
-    line-height: 1.7;
-    opacity: 0.8;
+    .panel {
+      padding: 64px 16px 40px;
+    }
   }
 </style>
 </head>
@@ -344,10 +468,10 @@
     </a>
 
     <nav class="nav-center">
-      <a href="#projects">PROJECTS</a>
-      <a href="#blog">BLOG</a>
-      <a href="#about">ABOUT</a>
-      <a href="#resume">RESUME</a>
+      <a href="#projects" data-panel="projects">PROJECTS</a>
+      <a href="#blog" data-panel="blog">BLOG</a>
+      <a href="#about" data-panel="about">ABOUT</a>
+      <a href="#resume" data-panel="resume">RESUME</a>
     </nav>
 
     <a class="nav-right" href="mailto:hello@william.studio">
@@ -363,7 +487,6 @@
 
   <h1 class="headline">WILLIAM</h1>
 
-  <!-- About Me 副标题：不带名字 -->
   <p class="subline">
     <span>// ABOUT ME — FREELANCE UI/UX DESIGNER</span>
     <span>BASED IN SHANGHAI, WORKING WORLDWIDE</span>
@@ -382,34 +505,183 @@
 
 </main>
 
-<!-- ===== 锚点落点区块 ===== -->
-<section class="anchor-section" id="projects">
-  <h2>Projects</h2>
-  <p>Selected works by William — coming soon.</p>
-</section>
+<!-- ===== 点击导航打开的内容面板 ===== -->
+<div class="panel-layer" id="panel-layer" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="panel-backdrop" data-close></div>
 
-<section class="anchor-section" id="blog">
-  <h2>Blog</h2>
-  <p>Notes on design, process, and product thinking.</p>
-</section>
+  <article class="panel" id="panel-projects" aria-labelledby="panel-projects-title">
+    <button class="panel-close" type="button" data-close aria-label="Close">✕</button>
+    <span class="panel-kicker">// Student work &amp; side projects</span>
+    <h2 class="panel-title" id="panel-projects-title">Projects</h2>
 
-<section class="anchor-section" id="about">
-  <h2>About</h2>
-  <p>William is a freelance UI/UX designer helping startups and businesses build clean, intuitive digital products.</p>
-</section>
+    <div class="panel-body">
+      <div class="panel-item">
+        <h3>Brickbase — LEGO Inventory &amp; Build Planner</h3>
+        <p>A mobile concept for LEGO builders to catalog parts, plan builds, and track progress. Built as a course project, from research and information architecture through wireframes and a high-fidelity prototype.</p>
+      </div>
 
-<section class="anchor-section" id="resume">
-  <h2>Resume</h2>
-  <p>Experience and education — available on request.</p>
-</section>
+      <div class="panel-item">
+        <h3>Campus Compass — Wayfinding for New Students</h3>
+        <p>A campus navigation concept that breaks directions into small, modular steps. The card layout borrows its logic from LEGO instructions: one clear move at a time.</p>
+      </div>
+
+      <div class="panel-item">
+        <h3>Focus Stack — A Study Timer Built Like Bricks</h3>
+        <p>A focus timer that turns tasks into stackable blocks. Inspired by the way a big build is split into numbered, bite-sized stages.</p>
+      </div>
+
+      <div class="panel-item">
+        <h3>Study Buddy — Collaborative Planner (In Progress)</h3>
+        <p>A study planner for small student groups. Currently in low-fidelity testing and early usability sessions.</p>
+      </div>
+    </div>
+  </article>
+
+  <article class="panel" id="panel-blog" aria-labelledby="panel-blog-title">
+    <button class="panel-close" type="button" data-close aria-label="Close">✕</button>
+    <span class="panel-kicker">// Notes from a design student</span>
+    <h2 class="panel-title" id="panel-blog-title">Blog</h2>
+
+    <div class="panel-body">
+      <div class="panel-item">
+        <h3>Why I Build With LEGO Before I Wireframe</h3>
+        <p>Before opening Figma, I sometimes build a rough LEGO model of the problem. It forces me to think in modules, constraints, and connections — the same things a good interface is made of.</p>
+      </div>
+
+      <div class="panel-item">
+        <h3>A Student's Guide to Design Systems</h3>
+        <p>LEGO instruction manuals are some of the best design system documentation I've read. Numbered stages, one new part at a time, and a clear picture of the finished build. Here's what I borrow from them.</p>
+      </div>
+
+      <div class="panel-item">
+        <h3>What a 500-Piece Set Taught Me About Patience</h3>
+        <p>Iteration is boring until it isn't. A large set only comes together after hours of small, unglamorous steps. Interface work is exactly the same.</p>
+      </div>
+
+      <div class="panel-item">
+        <h3>Designing Between Lectures</h3>
+        <p>How I structure client work around a full course load — short focused blocks, a small set of reusable components, and a lot of notes.</p>
+      </div>
+    </div>
+  </article>
+
+  <article class="panel" id="panel-about" aria-labelledby="panel-about-title">
+    <button class="panel-close" type="button" data-close aria-label="Close">✕</button>
+    <span class="panel-kicker">// Student, designer, LEGO builder</span>
+    <h2 class="panel-title" id="panel-about-title">About</h2>
+
+    <div class="panel-body">
+      <p>I'm a student and a freelance UI/UX designer. Weekdays are for class, evenings are for client work, and weekends are for LEGO.</p>
+
+      <p>LEGO has shaped how I design. It taught me to think in modules — define the parts first, then the structure, then the surface. I apply the same approach to products: break the problem down, build the system, and only then design the interface.</p>
+
+      <p>I like taking complicated things apart until they fit in my hands, then putting them back together one piece at a time. A LEGO set and a screen follow the same logic.</p>
+
+      <p>Right now I'm looking for student collaborations, small freelance projects, and any excuse to talk about modular design.</p>
+    </div>
+  </article>
+
+  <article class="panel" id="panel-resume" aria-labelledby="panel-resume-title">
+    <button class="panel-close" type="button" data-close aria-label="Close">✕</button>
+    <span class="panel-kicker">// Education &amp; skills</span>
+    <h2 class="panel-title" id="panel-resume-title">Resume</h2>
+
+    <div class="panel-body">
+      <div class="panel-item">
+        <h3>Education</h3>
+        <p>Design student, currently enrolled. Coursework in interaction design, information architecture, and visual systems. <em>(Replace with your school and dates.)</em></p>
+      </div>
+
+      <div class="panel-item">
+        <h3>Skills</h3>
+        <p>UI/UX Design · Wireframing · Prototyping · Information Architecture · Design Systems · Figma · HTML/CSS</p>
+      </div>
+
+      <div class="panel-item">
+        <h3>Interests</h3>
+        <p>LEGO · Modular Design · Product Thinking · Typography</p>
+      </div>
+
+      <div class="panel-item">
+        <h3>Availability</h3>
+        <p>Open to freelance projects and student collaborations. Use <strong>// HIRE ME</strong> to get in touch.</p>
+      </div>
+    </div>
+  </article>
+</div>
 
 <script>
 (function () {
   'use strict';
 
-  /* ------------------------------------------------------------------
-     CONSTANTS
-  ------------------------------------------------------------------ */
+  /* ==================================================================
+     PANEL OPEN / CLOSE
+  ================================================================== */
+  var layer = document.getElementById('panel-layer');
+  var panels = layer ? layer.querySelectorAll('.panel') : [];
+  var lastTrigger = null;
+
+  function showPanel(id, trigger) {
+    if (!layer) return;
+
+    lastTrigger = trigger || null;
+
+    for (var i = 0; i < panels.length; i++) {
+      panels[i].classList.toggle('is-active', panels[i].id === 'panel-' + id);
+    }
+
+    layer.classList.add('is-open');
+    layer.setAttribute('aria-hidden', 'false');
+
+    var active = layer.querySelector('.panel.is-active');
+    if (active) {
+      active.scrollTop = 0;
+      var closeBtn = active.querySelector('.panel-close');
+      if (closeBtn) closeBtn.focus();
+    }
+  }
+
+  function hidePanel() {
+    if (!layer) return;
+
+    layer.classList.remove('is-open');
+    layer.setAttribute('aria-hidden', 'true');
+
+    for (var i = 0; i < panels.length; i++) {
+      panels[i].classList.remove('is-active');
+    }
+
+    if (lastTrigger && typeof lastTrigger.focus === 'function') {
+      lastTrigger.focus();
+    }
+    lastTrigger = null;
+  }
+
+  var triggers = document.querySelectorAll('[data-panel]');
+  for (var i = 0; i < triggers.length; i++) {
+    triggers[i].addEventListener('click', function (e) {
+      e.preventDefault();
+      showPanel(this.getAttribute('data-panel'), this);
+    });
+  }
+
+  if (layer) {
+    layer.addEventListener('click', function (e) {
+      if (e.target.closest('[data-close]')) {
+        hidePanel();
+      }
+    });
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && layer && layer.classList.contains('is-open')) {
+      hidePanel();
+    }
+  });
+
+  /* ==================================================================
+     HERO VIDEO / CANVAS / EYE TRACKING（保持原逻辑不变）
+  ================================================================== */
   var CLOUD_MP4 =
     'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260909_102143_0afe0d98-f953-49c3-87c3-cc9b77a9fcd8.mp4';
 
@@ -481,9 +753,6 @@
   var tubeThin = new Path2D(TUBE_THIN_D);
   var tubeThick = new Path2D(TUBE_THICK_D);
 
-  /* ------------------------------------------------------------------
-     ELEMENTS
-  ------------------------------------------------------------------ */
   var video = document.getElementById('hero-video');
   var canvas = document.getElementById('hero-character');
   if (!video || !canvas) return;
@@ -500,15 +769,9 @@
   video.setAttribute('playsinline', '');
   video.setAttribute('webkit-playsinline', '');
 
-  /* ------------------------------------------------------------------
-     MEDIA QUERIES
-  ------------------------------------------------------------------ */
   var mqMobile = window.matchMedia('(max-width: 700px)');
   var mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  /* ------------------------------------------------------------------
-     POSTER
-  ------------------------------------------------------------------ */
   var poster = new Image();
   var posterReady = false;
   var everDrewVideo = false;
@@ -518,9 +781,6 @@
   };
   poster.src = './public/hero-poster.jpg';
 
-  /* ------------------------------------------------------------------
-     SOURCES
-  ------------------------------------------------------------------ */
   var sources = {
     desktop: CLOUD_MP4,
     mobile: CLOUD_MP4
@@ -559,9 +819,6 @@
     });
   }
 
-  /* ------------------------------------------------------------------
-     GEOMETRY
-  ------------------------------------------------------------------ */
   function getGeometry() {
     var rect = video.getBoundingClientRect();
     if (!rect.width || !rect.height) return null;
@@ -580,9 +837,6 @@
     };
   }
 
-  /* ------------------------------------------------------------------
-     CANVAS / MATTE
-  ------------------------------------------------------------------ */
   function resizeCanvas() {
     var rect = video.getBoundingClientRect();
     if (!rect.width || !rect.height) return false;
@@ -639,9 +893,6 @@
     mctx.filter = 'none';
   }
 
-  /* ------------------------------------------------------------------
-     DRAW
-  ------------------------------------------------------------------ */
   function draw() {
     if (!canvas.width || !canvas.height) return;
 
@@ -679,9 +930,6 @@
     ctx.globalCompositeOperation = 'source-over';
   }
 
-  /* ------------------------------------------------------------------
-     FRAME SYNC
-  ------------------------------------------------------------------ */
   var usingRVFC = typeof video.requestVideoFrameCallback === 'function';
 
   function onVideoFrame() {
@@ -707,9 +955,6 @@
 
   requestAnimationFrame(rafLoop);
 
-  /* ------------------------------------------------------------------
-     CURSOR -> EYE SEEKING
-  ------------------------------------------------------------------ */
   var pointerX = null;
   var pointerY = null;
   var seekRaf = null;
@@ -770,9 +1015,6 @@
     }
   }
 
-  /* ------------------------------------------------------------------
-     MODE HANDLING
-  ------------------------------------------------------------------ */
   function applyMode() {
     var isMobile = mqMobile.matches;
     var reduced = mqReduce.matches;
@@ -798,9 +1040,6 @@
     }
   }
 
-  /* ------------------------------------------------------------------
-     EVENTS
-  ------------------------------------------------------------------ */
   window.addEventListener('pointermove', function (e) {
     if (mqMobile.matches) return;
     pointerX = e.clientX;
@@ -847,9 +1086,6 @@
     mqReduce.addListener(onModeChange);
   }
 
-  /* ------------------------------------------------------------------
-     BOOT
-  ------------------------------------------------------------------ */
   resizeCanvas();
 
   resolveSources().then(function () {
