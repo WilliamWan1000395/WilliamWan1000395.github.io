@@ -140,6 +140,25 @@
     color: #ffffff;
   }
 
+  /* ---------- ABOUT ME SUBLINE ---------- */
+  .subline {
+    position: absolute;
+    left: 2.58vw;
+    top: calc(7vw + 23.5vw * 1.02);
+    margin: 0;
+    font-family: 'DM Sans', Arial, sans-serif;
+    font-weight: 400;
+    font-size: 1.075vw;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  .subline span { display: block; }
+  .subline span:nth-child(2) { padding-left: 3.6vw; }
+
   /* ---------- RIGHT TAGLINE ---------- */
   .tagline {
     position: absolute;
@@ -206,6 +225,17 @@
       font-size: 23.5vw;
     }
 
+    .subline {
+      top: calc(144px + 23.5vw * 1.02);
+      left: 2.58vw;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .subline span:nth-child(2) {
+      padding-left: 20px;
+    }
+
     .tagline {
       right: 22px;
       left: auto;
@@ -235,6 +265,11 @@
     .nav {
       padding-left: 16px;
       padding-right: 16px;
+      font-size: 11px;
+    }
+
+    .subline {
+      left: 16px;
       font-size: 11px;
     }
 
@@ -286,6 +321,11 @@
   </header>
 
   <h1 class="headline">WILLIAM</h1>
+
+  <p class="subline">
+    <span>// ABOUT ME — FREELANCE UI/UX DESIGNER</span>
+    <span>BASED IN SHANGHAI, WORKING WORLDWIDE</span>
+  </p>
 
   <p class="tagline">
     <span>// DESIGN THAT</span>
