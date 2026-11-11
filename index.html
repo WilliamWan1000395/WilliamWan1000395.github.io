@@ -1,1104 +1,549 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>William Studio</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2306122b'/%3E%3Ctext x='32' y='47' font-size='44' text-anchor='middle' fill='%23ffffff' font-family='Arial,Helvetica,sans-serif'%3E%E2%9C%B1%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>HAVENORBI — Olivia Studio</title>
+<link rel="icon" href="./public/logo.svg" type="image/svg+xml" />
+
 <style>
-  *, *::before, *::after { box-sizing: border-box; }
+@font-face{font-family:'Anton';src:url('./public/fonts/Anton-Regular.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'DM Sans';src:url('./public/fonts/DMSans-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
 
-  html { margin: 0; padding: 0; }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%}
+body{margin:0;background:#06122b;color:#fff;font-family:'DM Sans',Arial,sans-serif;font-synthesis:none;overflow:hidden;-webkit-font-smoothing:antialiased}
 
-  body {
-    margin: 0;
-    padding: 0;
-    color: #ffffff;
-    background: #06122b;
-    font-family: 'DM Sans', Arial, sans-serif;
-    font-synthesis: none;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow: hidden;
-  }
+.hero{position:relative;min-height:100svh;overflow:hidden;isolation:isolate;background:#06122b;color:#fff;font-family:'DM Sans',Arial,sans-serif;font-synthesis:none}
 
-  .hero {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    min-height: 100svh;
-    width: 100%;
-    color: #ffffff;
-  }
+/* 背景视频层 */
+.hero__bg-wrap{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#06122b}
+#hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;background:transparent;display:block}
 
-  /* ---------- BACKGROUND VIDEO ---------- */
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
-  }
+/* 前景角色层 */
+#hero-character{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;display:block}
 
-  #hero-video {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    pointer-events: none;
-    display: block;
-  }
+/* 右下角戴眼镜黑发小男孩（装饰） */
+.hero__boy{
+  position:absolute;
+  right:2.58vw;
+  bottom:7.7vh;
+  width:8vw;
+  max-width:120px;
+  min-width:70px;
+  z-index:4;
+  pointer-events:none;
+  user-select:none;
+}
+@media (max-width:700px){
+  .hero__boy{right:22px;bottom:96px;width:70px;}
+}
 
-  /* ---------- FOREGROUND CHARACTER CANVAS ---------- */
-  #hero-character {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-    pointer-events: none;
-    display: block;
-  }
+/* 导航 */
+.hero__nav{position:relative;z-index:3;display:flex;flex-direction:row;align-items:center;justify-content:space-between;padding:2.15vw 2.58vw;font-family:'DM Sans',Arial,sans-serif;font-weight:400;font-size:1.13vw;line-height:1.2;text-transform:uppercase;color:#fff;pointer-events:none;user-select:none}
+.hero__nav-left{display:flex;flex-direction:row;align-items:center;gap:.35vw;white-space:nowrap;flex-shrink:0}
+.hero__nav-star{font-size:1.35em;line-height:1}
+.hero__nav-center{position:absolute;left:50%;transform:translateX(-50%);display:flex;flex-direction:row;align-items:center;gap:3.9vw;white-space:nowrap;pointer-events:none}
+.hero__nav-right{display:flex;flex-direction:row;align-items:center;gap:.9vw;white-space:nowrap;flex-shrink:0}
+.hero__nav-circle{width:2.25vw;height:2.25vw;border:1.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hero__nav-circle svg{width:50%;height:50%;display:block}
 
-  /* ---------- NAVIGATION ---------- */
-  .nav {
-    position: relative;
-    z-index: 3;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 2.15vw 2.58vw;
-    font-family: 'DM Sans', Arial, sans-serif;
-    font-weight: 400;
-    font-size: 1.13vw;
-    line-height: 1.2;
-    text-transform: uppercase;
-  }
+/* ABOUT 可点击 */
+#nav-about{cursor:pointer;pointer-events:auto;}
 
-  .nav-left {
-    display: flex;
-    align-items: center;
-    gap: .35vw;
-    white-space: nowrap;
-    color: #ffffff;
-    text-decoration: none;
-  }
+/* 标题 */
+.hero__title{position:absolute;left:2.58vw;top:7vw;margin:0;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:23.5vw;line-height:1;letter-spacing:0;white-space:nowrap;text-transform:uppercase;color:#fff;pointer-events:none;user-select:none;z-index:1}
 
-  .nav-left .star {
-    font-size: 1.35em;
-    line-height: 1;
-  }
+/* 右侧标语 */
+.hero__tagline{position:absolute;left:71.5%;top:56.7%;margin:0;font-family:'DM Sans',Arial,sans-serif;font-weight:400;font-size:1.61vw;line-height:1.45;text-transform:uppercase;color:#fff;pointer-events:none;user-select:none;z-index:1}
+.hero__tagline-line{display:block}
+.hero__tagline-line--indent{padding-left:2.85vw}
 
-  .nav-center {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 3.9vw;
-    white-space: nowrap;
-  }
+/* 左下描述 */
+.hero__desc{position:absolute;left:3.95vw;bottom:7.7vh;margin:0;font-family:'DM Sans',Arial,sans-serif;font-weight:400;font-size:1.075vw;line-height:1.75;text-transform:uppercase;color:#fff;pointer-events:none;user-select:none;z-index:1}
+.hero__desc-line{display:block}
+.hero__desc-line--indent{padding-left:3.6vw}
 
-  .nav-center a {
-    color: #ffffff;
-    text-decoration: none;
-    transition: opacity 0.2s ease;
-  }
+/* ---------- ABOUT 弹窗 ---------- */
+.about-panel{
+  position:absolute;
+  inset:0;
+  z-index:10;
+  display:none;
+  background:rgba(6,18,43,.96);
+  color:#fff;
+  font-family:'DM Sans',Arial,sans-serif;
+  padding:6vw;
+  box-sizing:border-box;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.about-panel.is-open{display:flex;flex-direction:column;justify-content:center;}
+.about-panel__inner{max-width:760px;margin:0 auto;width:100%;}
+.about-panel__title{
+  font-family:'Anton',Impact,sans-serif;
+  font-weight:400;
+  font-size:6vw;
+  line-height:1;
+  letter-spacing:0;
+  text-transform:uppercase;
+  margin:0 0 28px;
+}
+.about-panel__row{display:flex;flex-direction:row;align-items:flex-start;gap:28px;flex-wrap:wrap;}
+.about-panel__boy{flex:0 0 auto;width:140px;max-width:34vw;}
+.about-panel__boy svg{width:100%;height:auto;display:block;}
+.about-panel__text{flex:1 1 260px;min-width:0;}
+.about-panel__text p{
+  font-size:15px;
+  line-height:1.8;
+  text-transform:uppercase;
+  margin:0 0 16px;
+}
+.about-panel__close{
+  margin-top:32px;
+  background:none;
+  border:1.5px solid #fff;
+  border-radius:999px;
+  color:#fff;
+  padding:12px 32px;
+  font-family:'DM Sans',Arial,sans-serif;
+  font-size:13px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  cursor:pointer;
+  pointer-events:auto;
+  align-self:flex-start;
+}
+.about-panel__close:hover{background:#fff;color:#06122b;}
 
-  .nav-center a:hover {
-    opacity: 0.7;
-  }
+@media (max-width:700px){
+  .hero{min-height:max(740px,100svh)}
+  .hero__nav{flex-wrap:wrap;gap:28px;padding:24px 20px 0;font-size:12px}
+  .hero__nav-center{position:static;transform:none;flex:0 0 100%;width:100%;justify-content:space-between;gap:12px;order:3}
+  .hero__nav-circle{width:28px;height:28px}
+  .hero__title{top:144px;left:2.58vw;font-size:23.5vw}
+  .hero__tagline{left:auto;right:22px;top:40%;font-size:18px;line-height:1.5}
+  .hero__tagline-line--indent{padding-left:24px}
+  .hero__desc{left:22px;right:22px;bottom:36px;font-size:12px;line-height:1.8}
+  .hero__desc-line--indent{padding-left:20px}
 
-  .nav-right {
-    display: flex;
-    align-items: center;
-    gap: .9vw;
-    white-space: nowrap;
-    color: #ffffff;
-    text-decoration: none;
-  }
-
-  .arrow-circle {
-    width: 2.25vw;
-    height: 2.25vw;
-    border: 1.5px solid #ffffff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
-  }
-
-  .arrow-circle svg {
-    width: 55%;
-    height: 55%;
-    display: block;
-  }
-
-  /* ---------- HEADLINE ---------- */
-  .headline {
-    position: absolute;
-    left: 2.58vw;
-    top: 7vw;
-    margin: 0;
-    font-family: 'Anton', Impact, sans-serif;
-    font-weight: 400;
-    font-size: 23.5vw;
-    line-height: 1;
-    letter-spacing: 0;
-    white-space: nowrap;
-    text-transform: uppercase;
-    color: #ffffff;
-  }
-
-  /* ---------- ABOUT ME SUBLINE ---------- */
-  .subline {
-    position: absolute;
-    left: 2.58vw;
-    top: calc(7vw + 23.5vw * 1.02);
-    margin: 0;
-    font-family: 'DM Sans', Arial, sans-serif;
-    font-weight: 400;
-    font-size: 1.075vw;
-    line-height: 1.5;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-    text-transform: uppercase;
-    color: #ffffff;
-  }
-
-  .subline span { display: block; }
-  .subline span:nth-child(2) { padding-left: 3.6vw; }
-
-  /* ---------- RIGHT TAGLINE ---------- */
-  .tagline {
-    position: absolute;
-    left: 71.5%;
-    top: 56.7%;
-    margin: 0;
-    font-family: 'DM Sans', Arial, sans-serif;
-    font-weight: 400;
-    font-size: 1.61vw;
-    line-height: 1.45;
-    text-transform: uppercase;
-    color: #ffffff;
-  }
-
-  .tagline span { display: block; }
-  .tagline span:nth-child(2) { padding-left: 2.85vw; }
-
-  /* ---------- BOTTOM-LEFT DESCRIPTION ---------- */
-  .desc {
-    position: absolute;
-    left: 3.95vw;
-    bottom: 7.7vh;
-    margin: 0;
-    font-family: 'DM Sans', Arial, sans-serif;
-    font-weight: 400;
-    font-size: 1.075vw;
-    line-height: 1.75;
-    text-transform: uppercase;
-    color: #ffffff;
-  }
-
-  .desc span { display: block; }
-  .desc span:nth-child(2) { padding-left: 3.6vw; }
-
-  /* ---------- PANEL LAYER (点击导航打开的内容面板) ---------- */
-  .panel-layer {
-    position: fixed;
-    inset: 0;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4vw;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.25s ease, visibility 0.25s ease;
-  }
-
-  .panel-layer.is-open {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-  }
-
-  .panel-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(6, 18, 43, 0.9);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-  }
-
-  .panel {
-    position: relative;
-    width: min(860px, 100%);
-    max-height: 82svh;
-    overflow-y: auto;
-    padding: 4vw 4vw 4.5vw;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    background: #06122b;
-    color: #ffffff;
-    display: none;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,.3) transparent;
-  }
-
-  .panel.is-active { display: block; }
-
-  .panel::-webkit-scrollbar { width: 6px; }
-  .panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,.3); }
-
-  .panel-close {
-    position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    width: 40px;
-    height: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 50%;
-    background: transparent;
-    color: #ffffff;
-    font-size: 16px;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s ease, border-color 0.2s ease;
-  }
-
-  .panel-close:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: #ffffff;
-  }
-
-  .panel-kicker {
-    display: block;
-    font-family: 'DM Sans', Arial, sans-serif;
-    font-size: clamp(0.7rem, 0.85vw, 0.85rem);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    opacity: 0.55;
-    margin-bottom: 1.6rem;
-  }
-
-  .panel-title {
-    margin: 0 0 2rem;
-    font-family: 'Anton', Impact, sans-serif;
-    font-weight: 400;
-    font-size: clamp(2.6rem, 5.2vw, 4.4rem);
-    line-height: 1;
-    text-transform: uppercase;
-    color: #ffffff;
-  }
-
-  .panel-body p {
-    margin: 0 0 1.35em;
-    max-width: 62ch;
-    font-size: clamp(0.95rem, 1.02vw, 1.02rem);
-    line-height: 1.8;
-    opacity: 0.85;
-  }
-
-  .panel-body p:last-child { margin-bottom: 0; }
-
-  .panel-item {
-    margin: 0 0 2rem;
-    padding: 0;
-  }
-
-  .panel-item:last-child { margin-bottom: 0; }
-
-  .panel-item h3 {
-    margin: 0 0 0.4rem;
-    font-family: 'DM Sans', Arial, sans-serif;
-    font-weight: 400;
-    font-size: clamp(0.9rem, 1vw, 1rem);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #ffffff;
-  }
-
-  .panel-item p {
-    margin: 0;
-    max-width: 62ch;
-    font-size: clamp(0.9rem, 0.98vw, 0.98rem);
-    line-height: 1.75;
-    opacity: 0.72;
-  }
-
-  /* ---------- MOBILE ---------- */
-  @media (max-width: 700px) {
-    .hero {
-      min-height: max(740px, 100svh);
-    }
-
-    .nav {
-      flex-wrap: wrap;
-      gap: 28px;
-      padding: 24px 20px 0;
-      font-size: 12px;
-    }
-
-    .nav-center {
-      position: static;
-      transform: none;
-      width: 100%;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .arrow-circle {
-      width: 28px;
-      height: 28px;
-    }
-
-    .headline {
-      top: 144px;
-      left: 2.58vw;
-      font-size: 23.5vw;
-    }
-
-    .subline {
-      top: calc(144px + 23.5vw * 1.02);
-      left: 2.58vw;
-      font-size: 12px;
-      line-height: 1.6;
-    }
-
-    .subline span:nth-child(2) {
-      padding-left: 20px;
-    }
-
-    .tagline {
-      right: 22px;
-      left: auto;
-      top: 40%;
-      font-size: 18px;
-      line-height: 1.5;
-    }
-
-    .tagline span:nth-child(2) {
-      padding-left: 24px;
-    }
-
-    .desc {
-      left: 22px;
-      right: 22px;
-      bottom: 36px;
-      font-size: 12px;
-      line-height: 1.8;
-    }
-
-    .desc span:nth-child(2) {
-      padding-left: 20px;
-    }
-
-    .panel-layer {
-      padding: 0;
-    }
-
-    .panel {
-      width: 100%;
-      max-height: 100svh;
-      height: 100svh;
-      border: none;
-      padding: 72px 24px 48px;
-    }
-
-    .panel-close {
-      top: 18px;
-      right: 18px;
-      width: 36px;
-      height: 36px;
-    }
-  }
-
-  @media (max-width: 360px) {
-    .nav {
-      padding-left: 16px;
-      padding-right: 16px;
-      font-size: 11px;
-    }
-
-    .subline {
-      left: 16px;
-      font-size: 11px;
-    }
-
-    .desc {
-      left: 16px;
-      right: 16px;
-      font-size: 11px;
-    }
-
-    .panel {
-      padding: 64px 16px 40px;
-    }
-  }
+  .about-panel{padding:28px 22px;}
+  .about-panel__title{font-size:15vw;margin-bottom:20px;}
+  .about-panel__boy{width:110px;}
+}
+@media (max-width:360px){
+  .hero__nav{padding-left:16px;padding-right:16px;font-size:11px}
+  .hero__desc{left:16px;right:16px;font-size:11px}
+}
 </style>
 </head>
 <body>
 
 <main class="hero">
 
-  <div class="hero-bg">
-    <video
-      id="hero-video"
-      muted
-      playsinline
-      preload="auto"
-      poster="./public/hero-poster.jpg"></video>
+  <!-- 1. 背景视频 -->
+  <div class="hero__bg-wrap">
+    <video id="hero-video"
+      muted playsinline preload="auto"
+      src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJ0ttwIXH07lWA1P/hf_20260909_102143_0afe0d98-f953-49c3-87c3-cc9b77a9fcd8.mp4"></video>
   </div>
 
+  <!-- 2. 前景角色 canvas -->
   <canvas id="hero-character" width="1920" height="1080"></canvas>
 
-  <header class="nav">
-    <a class="nav-left" href="#top">
-      <span class="star">✱</span>
-      <span>WILLIAM STUDIO</span>
-    </a>
+  <!-- 右下角小男孩（装饰） -->
+  <div class="hero__boy" aria-hidden="true">
+    <svg viewBox="0 0 120 120" width="100%" height="100%">
+      <path d="M30,50 Q30,20 60,20 Q90,20 90,50 Q90,35 60,35 Q30,35 30,50 Z" fill="#1a1a1a"/>
+      <circle cx="60" cy="65" r="28" fill="#f5d0b5"/>
+      <path d="M32,50 Q35,30 60,30 Q85,30 88,50 Q85,40 60,40 Q35,40 32,50 Z" fill="#1a1a1a"/>
+      <circle cx="48" cy="60" r="10" fill="none" stroke="#222" stroke-width="3"/>
+      <circle cx="72" cy="60" r="10" fill="none" stroke="#222" stroke-width="3"/>
+      <line x1="58" y1="60" x2="62" y2="60" stroke="#222" stroke-width="3"/>
+      <circle cx="48" cy="60" r="3" fill="#222"/>
+      <circle cx="72" cy="60" r="3" fill="#222"/>
+      <path d="M50,78 Q60,88 70,78" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+  </div>
 
-    <nav class="nav-center">
-      <a href="#projects" data-panel="projects">PROJECTS</a>
-      <a href="#blog" data-panel="blog">BLOG</a>
-      <a href="#about" data-panel="about">ABOUT</a>
-      <a href="#resume" data-panel="resume">RESUME</a>
+  <!-- 3. 导航 -->
+  <header class="hero__nav">
+    <div class="hero__nav-left"><span class="hero__nav-star">✦</span><span>OLIVIA STUDIO</span></div>
+    <nav class="hero__nav-center">
+      <span>PROJECTS</span>
+      <span>BLOG</span>
+      <span id="nav-about">ABOUT</span>
+      <span>RESUME</span>
     </nav>
-
-    <a class="nav-right" href="mailto:hello@william.studio">
+    <div class="hero__nav-right">
       <span>// HIRE ME</span>
-      <span class="arrow-circle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M6 18 18 6M7 6h11v11"></path>
+      <span class="hero__nav-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 18 18 6M7 6h11v11" />
         </svg>
       </span>
-    </a>
+    </div>
   </header>
 
-  <h1 class="headline">WILLIAM</h1>
+  <!-- 4. 标题 -->
+  <h1 class="hero__title">HAVENORBI</h1>
 
-  <p class="subline">
-    <span>// ABOUT ME — FREELANCE UI/UX DESIGNER</span>
-    <span>BASED IN SHANGHAI, WORKING WORLDWIDE</span>
+  <!-- 5. 右侧标语 -->
+  <p class="hero__tagline">
+    <span class="hero__tagline-line">// DESIGN THAT SPEAKS</span>
+    <span class="hero__tagline-line hero__tagline-line--indent">YOUR BRAND</span>
   </p>
 
-  <p class="tagline">
-    <span>// DESIGN THAT</span>
-    <span>SPEAKS YOUR BRAND</span>
+  <!-- 6. 左下描述 -->
+  <p class="hero__desc">
+    <span class="hero__desc-line">// I'M OLIVIA — A FREELANCE UI/UX DESIGNER</span>
+    <span class="hero__desc-line hero__desc-line--indent">HELPING STARTUPS AND BUSINESSES BUILD</span>
+    <span class="hero__desc-line hero__desc-line--indent">CLEAN, INTUITIVE DIGITAL PRODUCTS.</span>
   </p>
 
-  <p class="desc">
-    <span>// I’M WILLIAM — A FREELANCE UI/UX DESIGNER</span>
-    <span>HELPING STARTUPS AND BUSINESSES BUILD</span>
-    <span>CLEAN, INTUITIVE DIGITAL PRODUCTS.</span>
-  </p>
+  <!-- ABOUT 弹窗 -->
+  <div id="about-panel" class="about-panel" role="dialog" aria-modal="true" aria-labelledby="about-title">
+    <div class="about-panel__inner">
+      <h2 class="about-panel__title" id="about-title">ABOUT</h2>
+
+      <div class="about-panel__row">
+        <!-- 戴眼镜黑发小男孩 -->
+        <div class="about-panel__boy" aria-hidden="true">
+          <svg viewBox="0 0 120 120">
+            <path d="M30,50 Q30,20 60,20 Q90,20 90,50 Q90,35 60,35 Q30,35 30,50 Z" fill="#1a1a1a"/>
+            <circle cx="60" cy="65" r="28" fill="#f5d0b5"/>
+            <path d="M32,50 Q35,30 60,30 Q85,30 88,50 Q85,40 60,40 Q35,40 32,50 Z" fill="#1a1a1a"/>
+            <circle cx="48" cy="60" r="10" fill="none" stroke="#222" stroke-width="3"/>
+            <circle cx="72" cy="60" r="10" fill="none" stroke="#222" stroke-width="3"/>
+            <line x1="58" y1="60" x2="62" y2="60" stroke="#222" stroke-width="3"/>
+            <circle cx="48" cy="60" r="3" fill="#222"/>
+            <circle cx="72" cy="60" r="3" fill="#222"/>
+            <path d="M50,78 Q60,88 70,78" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="about-panel__text">
+          <p>// I'M OLIVIA — A FREELANCE UI/UX DESIGNER HELPING STARTUPS AND BUSINESSES BUILD CLEAN, INTUITIVE DIGITAL PRODUCTS.</p>
+          <p>// BASED IN HAVENORBI. AVAILABLE FOR SELECT PROJECTS.</p>
+        </div>
+      </div>
+
+      <button type="button" id="about-close" class="about-panel__close">CLOSE</button>
+    </div>
+  </div>
 
 </main>
 
-<!-- ===== 点击导航打开的内容面板 ===== -->
-<div class="panel-layer" id="panel-layer" aria-hidden="true" role="dialog" aria-modal="true">
-  <div class="panel-backdrop" data-close></div>
-
-  <article class="panel" id="panel-projects" aria-labelledby="panel-projects-title">
-    <button class="panel-close" type="button" data-close aria-label="Close">✕</button>
-    <span class="panel-kicker">// Student work &amp; side projects</span>
-    <h2 class="panel-title" id="panel-projects-title">Projects</h2>
-
-    <div class="panel-body">
-      <div class="panel-item">
-        <h3>Brickbase — LEGO Inventory &amp; Build Planner</h3>
-        <p>A mobile concept for LEGO builders to catalog parts, plan builds, and track progress. Built as a course project, from research and information architecture through wireframes and a high-fidelity prototype.</p>
-      </div>
-
-      <div class="panel-item">
-        <h3>Campus Compass — Wayfinding for New Students</h3>
-        <p>A campus navigation concept that breaks directions into small, modular steps. The card layout borrows its logic from LEGO instructions: one clear move at a time.</p>
-      </div>
-
-      <div class="panel-item">
-        <h3>Focus Stack — A Study Timer Built Like Bricks</h3>
-        <p>A focus timer that turns tasks into stackable blocks. Inspired by the way a big build is split into numbered, bite-sized stages.</p>
-      </div>
-
-      <div class="panel-item">
-        <h3>Study Buddy — Collaborative Planner (In Progress)</h3>
-        <p>A study planner for small student groups. Currently in low-fidelity testing and early usability sessions.</p>
-      </div>
-    </div>
-  </article>
-
-  <article class="panel" id="panel-blog" aria-labelledby="panel-blog-title">
-    <button class="panel-close" type="button" data-close aria-label="Close">✕</button>
-    <span class="panel-kicker">// Notes from a design student</span>
-    <h2 class="panel-title" id="panel-blog-title">Blog</h2>
-
-    <div class="panel-body">
-      <div class="panel-item">
-        <h3>Why I Build With LEGO Before I Wireframe</h3>
-        <p>Before opening Figma, I sometimes build a rough LEGO model of the problem. It forces me to think in modules, constraints, and connections — the same things a good interface is made of.</p>
-      </div>
-
-      <div class="panel-item">
-        <h3>A Student's Guide to Design Systems</h3>
-        <p>LEGO instruction manuals are some of the best design system documentation I've read. Numbered stages, one new part at a time, and a clear picture of the finished build. Here's what I borrow from them.</p>
-      </div>
-
-      <div class="panel-item">
-        <h3>What a 500-Piece Set Taught Me About Patience</h3>
-        <p>Iteration is boring until it isn't. A large set only comes together after hours of small, unglamorous steps. Interface work is exactly the same.</p>
-      </div>
-
-      <div class="panel-item">
-        <h3>Designing Between Lectures</h3>
-        <p>How I structure client work around a full course load — short focused blocks, a small set of reusable components, and a lot of notes.</p>
-      </div>
-    </div>
-  </article>
-
-  <article class="panel" id="panel-about" aria-labelledby="panel-about-title">
-    <button class="panel-close" type="button" data-close aria-label="Close">✕</button>
-    <span class="panel-kicker">// Student, designer, LEGO builder</span>
-    <h2 class="panel-title" id="panel-about-title">About</h2>
-
-    <div class="panel-body">
-      <p>I'm a student and a freelance UI/UX designer. Weekdays are for class, evenings are for client work, and weekends are for LEGO.</p>
-
-      <p>LEGO has shaped how I design. It taught me to think in modules — define the parts first, then the structure, then the surface. I apply the same approach to products: break the problem down, build the system, and only then design the interface.</p>
-
-      <p>I like taking complicated things apart until they fit in my hands, then putting them back together one piece at a time. A LEGO set and a screen follow the same logic.</p>
-
-      <p>Right now I'm looking for student collaborations, small freelance projects, and any excuse to talk about modular design.</p>
-    </div>
-  </article>
-
-  <article class="panel" id="panel-resume" aria-labelledby="panel-resume-title">
-    <button class="panel-close" type="button" data-close aria-label="Close">✕</button>
-    <span class="panel-kicker">// Education &amp; skills</span>
-    <h2 class="panel-title" id="panel-resume-title">Resume</h2>
-
-    <div class="panel-body">
-      <div class="panel-item">
-        <h3>Education</h3>
-        <p>Design student, currently enrolled. Coursework in interaction design, information architecture, and visual systems. <em>(Replace with your school and dates.)</em></p>
-      </div>
-
-      <div class="panel-item">
-        <h3>Skills</h3>
-        <p>UI/UX Design · Wireframing · Prototyping · Information Architecture · Design Systems · Figma · HTML/CSS</p>
-      </div>
-
-      <div class="panel-item">
-        <h3>Interests</h3>
-        <p>LEGO · Modular Design · Product Thinking · Typography</p>
-      </div>
-
-      <div class="panel-item">
-        <h3>Availability</h3>
-        <p>Open to freelance projects and student collaborations. Use <strong>// HIRE ME</strong> to get in touch.</p>
-      </div>
-    </div>
-  </article>
-</div>
-
 <script>
-(function () {
-  'use strict';
+(function(){
+'use strict';
 
-  /* ==================================================================
-     PANEL OPEN / CLOSE
-  ================================================================== */
-  var layer = document.getElementById('panel-layer');
-  var panels = layer ? layer.querySelectorAll('.panel') : [];
-  var lastTrigger = null;
+/* ========== ABOUT 弹窗 ========== */
+var navAbout = document.getElementById('nav-about');
+var aboutPanel = document.getElementById('about-panel');
+var aboutClose = document.getElementById('about-close');
 
-  function showPanel(id, trigger) {
-    if (!layer) return;
-
-    lastTrigger = trigger || null;
-
-    for (var i = 0; i < panels.length; i++) {
-      panels[i].classList.toggle('is-active', panels[i].id === 'panel-' + id);
-    }
-
-    layer.classList.add('is-open');
-    layer.setAttribute('aria-hidden', 'false');
-
-    var active = layer.querySelector('.panel.is-active');
-    if (active) {
-      active.scrollTop = 0;
-      var closeBtn = active.querySelector('.panel-close');
-      if (closeBtn) closeBtn.focus();
-    }
+function openAbout(){
+  if(!aboutPanel) return;
+  aboutPanel.classList.add('is-open');
+  if(aboutClose && aboutClose.focus) aboutClose.focus();
+}
+function closeAbout(){
+  if(!aboutPanel) return;
+  aboutPanel.classList.remove('is-open');
+  if(navAbout && navAbout.focus) navAbout.focus();
+}
+if(navAbout){ navAbout.addEventListener('click', openAbout); }
+if(aboutClose){ aboutClose.addEventListener('click', closeAbout); }
+window.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' && aboutPanel && aboutPanel.classList.contains('is-open')){
+    closeAbout();
   }
-
-  function hidePanel() {
-    if (!layer) return;
-
-    layer.classList.remove('is-open');
-    layer.setAttribute('aria-hidden', 'true');
-
-    for (var i = 0; i < panels.length; i++) {
-      panels[i].classList.remove('is-active');
-    }
-
-    if (lastTrigger && typeof lastTrigger.focus === 'function') {
-      lastTrigger.focus();
-    }
-    lastTrigger = null;
-  }
-
-  var triggers = document.querySelectorAll('[data-panel]');
-  for (var i = 0; i < triggers.length; i++) {
-    triggers[i].addEventListener('click', function (e) {
-      e.preventDefault();
-      showPanel(this.getAttribute('data-panel'), this);
-    });
-  }
-
-  if (layer) {
-    layer.addEventListener('click', function (e) {
-      if (e.target.closest('[data-close]')) {
-        hidePanel();
-      }
-    });
-  }
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && layer && layer.classList.contains('is-open')) {
-      hidePanel();
-    }
+});
+if(aboutPanel){
+  aboutPanel.addEventListener('click', function(e){
+    if(e.target === aboutPanel) closeAbout();
   });
+}
 
-  /* ==================================================================
-     HERO VIDEO / CANVAS / EYE TRACKING（保持原逻辑不变）
-  ================================================================== */
-  var CLOUD_MP4 =
-    'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260909_102143_0afe0d98-f953-49c3-87c3-cc9b77a9fcd8.mp4';
+/* ========== 原有 hero 逻辑 ========== */
+var VIDEO_W = 1920, VIDEO_H = 1080;
+var EYE_X = 922, EYE_Y = 507;
+var CENTER_X = 960, CENTER_Y = 540;
+var SEEK_EPS = 1/48, SAFE_TAIL = 1/24;
 
-  var SRC_W = 1920;
-  var SRC_H = 1080;
+var CLOUDFRONT_URL = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJ0ttwIXH07lWA1P/hf_20260909_102143_0afe0d98-f953-49c3-87c3-cc9b77a9fcd8.mp4';
 
-  var EYE_X = 922;
-  var EYE_Y = 507;
+var ANGLE_SAMPLES = [
+  [0.140436,1.83333],[0.272074,1.875],[0.37721,1.91667],[0.487211,1.95833],
+  [0.758188,2],[1.03816,0.29167],[1.291266,0.33333],[1.29251,0.25],
+  [1.531114,0.375],[1.748845,0.41667],[1.914354,0.45833],[2.135974,0.5],
+  [2.297991,0.54167],[2.424228,0.58333],[2.628603,0.625],[2.795553,0.66667],
+  [2.908785,0.70833],[3.044833,0.75],[3.145293,0.79167],[3.38155,0.83333],
+  [3.539566,0.875],[3.681233,0.91667],[3.830669,0.95833],[4.018275,1],
+  [4.15919,1.04167],[4.284155,1.08333],[4.381621,1.125],[4.551081,1.16667],
+  [4.625911,1.20833],[4.726682,1.25],[4.804165,1.29167],[4.920395,1.33333],
+  [5.015693,1.375],[5.109664,1.41667],[5.191176,1.45833],[5.37081,1.5],
+  [5.453795,1.54167],[5.537064,1.58333],[5.663308,1.625],[5.858054,1.66667],
+  [5.962517,1.70833],[6.064804,1.75],[6.194798,1.79167]
+];
 
-  var CAL = [
-    [0.140436, 1.83333], [0.272074, 1.875],   [0.37721, 1.91667],
-    [0.487211, 1.95833], [0.758188, 2],       [1.03816, 0.29167],
-    [1.291266, 0.33333], [1.29251, 0.25],     [1.531114, 0.375],
-    [1.748845, 0.41667], [1.914354, 0.45833], [2.135974, 0.5],
-    [2.297991, 0.54167], [2.424228, 0.58333], [2.628603, 0.625],
-    [2.795553, 0.66667], [2.908785, 0.70833], [3.044833, 0.75],
-    [3.145293, 0.79167], [3.38155, 0.83333],  [3.539566, 0.875],
-    [3.681233, 0.91667], [3.830669, 0.95833], [4.018275, 1],
-    [4.15919, 1.04167],  [4.284155, 1.08333], [4.381621, 1.125],
-    [4.551081, 1.16667], [4.625911, 1.20833], [4.726682, 1.25],
-    [4.804165, 1.29167], [4.920395, 1.33333], [5.015693, 1.375],
-    [5.109664, 1.41667], [5.191176, 1.45833], [5.37081, 1.5],
-    [5.453795, 1.54167], [5.537064, 1.58333], [5.663308, 1.625],
-    [5.858054, 1.66667], [5.962517, 1.70833], [6.064804, 1.75],
-    [6.194798, 1.79167]
-  ];
+var video = document.getElementById('hero-video');
+var canvas = document.getElementById('hero-character');
+var ctx = canvas.getContext('2d');
 
-  var CHARACTER_D =
-    'M 738 451 ' +
-    'C 755 394 803 345 865 327 ' +
-    'C 927 308 1000 321 1045 352 ' +
-    'C 1096 386 1123 444 1124 489 ' +
-    'L 1130 489 ' +
-    'C 1140 505 1141 532 1134 550 ' +
-    'L 1116 551 ' +
-    'C 1111 577 1107 597 1095 611 ' +
-    'Q 1110 611 1106 630 ' +
-    'L 1101 650 ' +
-    'C 1111 669 1113 693 1118 727 ' +
-    'C 1124 751 1117 782 1106 795 ' +
-    'Q 1092 808 1069 800 ' +
-    'L 1058 838 L 1055 878 ' +
-    'Q 1004 886 934 881 ' +
-    'L 929 836 L 921 836 L 920 879 ' +
-    'Q 862 887 800 880 ' +
-    'L 798 832 ' +
-    'C 783 835 778 819 775 809 ' +
-    'L 762 837 ' +
-    'Q 753 858 739 847 ' +
-    'Q 730 839 743 815 ' +
-    'L 754 785 ' +
-    'Q 726 786 716 774 ' +
-    'L 718 743 ' +
-    'C 705 730 710 691 727 672 ' +
-    'L 748 654 ' +
-    'Q 740 642 747 631 ' +
-    'L 751 613 ' +
-    'C 741 598 736 574 737 550 ' +
-    'L 694 556 L 704 535 ' +
-    'C 670 533 644 510 640 482 ' +
-    'C 632 455 649 428 674 418 ' +
-    'C 700 406 727 416 739 433 Z';
+var mqMobile = window.matchMedia('(max-width:700px)');
+var mqReduced = window.matchMedia('(prefers-reduced-motion:reduce)');
 
-  var TUBE_THIN_D  = 'M 703 550 C 696 600 701 639 744 660';
-  var TUBE_THICK_D = 'M 813 752 C 797 774 786 811 776 836 ' +
-                     'M 1040 763 C 1052 797 1060 826 1068 847';
+var isMobile = mqMobile.matches;
+var isReduced = mqReduced.matches;
+var scrubEnabled = !isMobile && !isReduced;
 
-  var characterPath = new Path2D(CHARACTER_D);
-  var tubeThin = new Path2D(TUBE_THIN_D);
-  var tubeThick = new Path2D(TUBE_THICK_D);
+var hasFrame = false;
+var lastT = -1;
+var rafPending = false;
+var px = null, py = null;
+var blobTried = false;
 
-  var video = document.getElementById('hero-video');
-  var canvas = document.getElementById('hero-character');
-  if (!video || !canvas) return;
+var silhouette = new Path2D(
+  'M 738 451  C 755 394 803 345 865 327  C 927 308 1000 321 1045 352  '+
+  'C 1096 386 1123 444 1124 489  L 1130 489  C 1140 505 1141 532 1134 550  '+
+  'L 1116 551  C 1111 577 1107 597 1095 611  Q 1110 611 1106 630  L 1101 650  '+
+  'C 1111 669 1113 693 1118 727  C 1124 751 1117 782 1106 795  Q 1092 808 1069 800  '+
+  'L 1058 838 L 1055 878  Q 1004 886 934 881  L 929 836 L 921 836 L 920 879  '+
+  'Q 862 887 800 880  L 798 832  C 783 835 778 819 775 809  L 762 837  '+
+  'Q 753 858 739 847  Q 730 839 743 815  L 754 785  Q 726 786 716 774  '+
+  'L 718 743  C 705 730 710 691 727 672  L 748 654  Q 740 642 747 631  '+
+  'L 751 613  C 741 598 736 574 737 550  L 694 556 L 704 535  '+
+  'C 670 533 644 510 640 482  C 632 455 649 428 674 418  '+
+  'C 700 406 727 416 739 433 Z'
+);
+var tube1  = new Path2D('M 703 550 C 696 600 701 639 744 660');
+var tube2a = new Path2D('M 813 752 C 797 774 786 811 776 836');
+var tube2b = new Path2D('M 1040 763 C 1052 797 1060 826 1068 847');
 
-  var ctx = canvas.getContext('2d');
-  if (!ctx) return;
+function drawForeground(){
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.clearRect(0,0,VIDEO_W,VIDEO_H);
+  if(!hasFrame) return;
 
-  var matte = document.createElement('canvas');
-  var mctx = matte.getContext('2d');
+  try { ctx.drawImage(video,0,0,VIDEO_W,VIDEO_H); }
+  catch(e){ return; }
 
-  video.muted = true;
-  video.playsInline = true;
-  video.setAttribute('muted', '');
-  video.setAttribute('playsinline', '');
-  video.setAttribute('webkit-playsinline', '');
+  ctx.save();
+  ctx.globalCompositeOperation = 'destination-in';
 
-  var mqMobile = window.matchMedia('(max-width: 700px)');
-  var mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  ctx.save();
+  try { ctx.filter = 'blur(0.7px)'; } catch(e){}
+  ctx.fillStyle = '#ffffff';
+  ctx.fill(silhouette);
+  ctx.restore();
 
-  var poster = new Image();
-  var posterReady = false;
-  var everDrewVideo = false;
-  poster.onload = function () {
-    posterReady = true;
-    if (!everDrewVideo) draw();
-  };
-  poster.src = './public/hero-poster.jpg';
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineJoin = 'round';
+  ctx.lineCap  = 'round';
 
-  var sources = {
-    desktop: CLOUD_MP4,
-    mobile: CLOUD_MP4
-  };
+  ctx.lineWidth = 8;
+  ctx.stroke(tube1);
 
-  var activeSrc = null;
+  ctx.lineWidth = 20;
+  ctx.stroke(tube2a);
+  ctx.stroke(tube2b);
 
-  function tryBlobURL(url) {
-    return fetch(url, { cache: 'force-cache' })
-      .then(function (res) {
-        if (!res.ok) return null;
-        var ct = res.headers.get('content-type') || '';
-        if (ct && !/video|octet-stream|mp4/i.test(ct)) return null;
-        return res.blob();
-      })
-      .then(function (blob) {
-        if (!blob || blob.size < 1024) return null;
-        return URL.createObjectURL(blob);
-      })
-      .catch(function () { return null; });
-  }
+  ctx.restore();
+}
 
-  function resolveSources() {
-    if (location.protocol === 'file:') {
-      sources.desktop = './public/hero-scrub.mp4';
-      sources.mobile = './public/hero-background.mp4';
-      return Promise.resolve();
+function maybeDraw(){
+  if(!hasFrame) return;
+  var t = video.currentTime;
+  if(t !== lastT){ lastT = t; drawForeground(); }
+}
+
+function forceDraw(){
+  lastT = -1;
+  if(hasFrame) drawForeground();
+}
+
+function markReady(){
+  if(video.videoWidth > 0 && video.readyState >= 2){
+    var first = !hasFrame;
+    hasFrame = true;
+
+    if(!isMobile && video.currentTime === 0 && video.readyState >= 1){
+      try { video.currentTime = 1/240; } catch(e){}
     }
+    if(first){ forceDraw(); }
+    else { maybeDraw(); }
 
-    return Promise.all([
-      tryBlobURL('./public/hero-scrub.mp4'),
-      tryBlobURL('./public/hero-background.mp4')
-    ]).then(function (results) {
-      if (results[0]) sources.desktop = results[0];
-      if (results[1]) sources.mobile = results[1];
-    });
+    if(px !== null) schedulePointer();
   }
+}
 
-  function getGeometry() {
-    var rect = video.getBoundingClientRect();
-    if (!rect.width || !rect.height) return null;
-    var scale = Math.max(rect.width / SRC_W, rect.height / SRC_H);
-    var dw = SRC_W * scale;
-    var dh = SRC_H * scale;
-    return {
-      rect: rect,
-      W: rect.width,
-      H: rect.height,
-      scale: scale,
-      dw: dw,
-      dh: dh,
-      dx: (rect.width - dw) / 2,
-      dy: (rect.height - dh) / 2
-    };
+video.addEventListener('loadedmetadata', function(){
+  if(!isMobile && video.currentTime === 0){
+    try { video.currentTime = 1/240; } catch(e){}
   }
+});
+video.addEventListener('loadeddata', markReady);
+video.addEventListener('canplay', markReady);
+video.addEventListener('canplaythrough', markReady);
+video.addEventListener('playing', markReady);
+video.addEventListener('seeked', function(){ markReady(); forceDraw(); });
+video.addEventListener('timeupdate', maybeDraw);
+video.addEventListener('error', function(){
+  console.error('[hero] video error', video.error && video.error.code, video.currentSrc);
+  if(video.currentSrc !== CLOUDFRONT_URL){
+    video.src = CLOUDFRONT_URL;
+    video.load();
+  }
+});
 
-  function resizeCanvas() {
-    var rect = video.getBoundingClientRect();
-    if (!rect.width || !rect.height) return false;
+var pollCount = 0;
+var pollTimer = setInterval(function(){
+  pollCount++;
+  if(video.videoWidth > 0 && video.readyState >= 2){ markReady(); clearInterval(pollTimer); }
+  else if(pollCount > 48){ clearInterval(pollTimer); }
+}, 250);
 
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var w = Math.max(1, Math.round(rect.width * dpr));
-    var h = Math.max(1, Math.round(rect.height * dpr));
+function loop(){ maybeDraw(); requestAnimationFrame(loop); }
+function startLoops(){
+  requestAnimationFrame(loop);
+  if('requestVideoFrameCallback' in video){
+    var onFrame = function(){ maybeDraw(); video.requestVideoFrameCallback(onFrame); };
+    video.requestVideoFrameCallback(onFrame);
+  }
+}
 
-    if (canvas.width !== w || canvas.height !== h) {
-      canvas.width = w;
-      canvas.height = h;
-      buildMatte();
-      return true;
+function normAngle(a){ var r = a % (Math.PI*2); if(r<0) r += Math.PI*2; return r; }
+function angDist(a,b){ var d = Math.abs(a-b) % (Math.PI*2); if(d>Math.PI) d = Math.PI*2-d; return d; }
+function closestSample(angle){
+  var best = ANGLE_SAMPLES[0], bestD = Infinity;
+  for(var i=0;i<ANGLE_SAMPLES.length;i++){
+    var d = angDist(angle, ANGLE_SAMPLES[i][0]);
+    if(d < bestD){ bestD = d; best = ANGLE_SAMPLES[i]; }
+  }
+  return best;
+}
+function seekTo(t){
+  if(!isFinite(video.duration) || video.duration <= 0) return;
+  var maxT = video.duration - SAFE_TAIL;
+  if(maxT <= 0) return;
+  var target = Math.min(t, maxT);
+  if(Math.abs(video.currentTime - target) > SEEK_EPS && !video.seeking){
+    try { video.currentTime = target; } catch(e){}
+  }
+}
+function processPointer(){
+  if(px === null || py === null) return;
+  if(!scrubEnabled || !hasFrame) return;
+  if(aboutPanel && aboutPanel.classList.contains('is-open')) return;
+
+  var rect = video.getBoundingClientRect();
+  var scale = Math.max(rect.width/VIDEO_W, rect.height/VIDEO_H);
+  var eyeX = rect.left + rect.width/2  + (EYE_X - CENTER_X) * scale;
+  var eyeY = rect.top  + rect.height/2 + (EYE_Y - CENTER_Y) * scale;
+
+  var dx = px - eyeX, dy = py - eyeY;
+  if(Math.sqrt(dx*dx+dy*dy) < 8) return;
+
+  var angle = normAngle(Math.atan2(dy, dx));
+  var sample = closestSample(angle);
+  seekTo(sample[1] + 1/240);
+}
+function schedulePointer(){
+  if(rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(function(){ rafPending = false; processPointer(); });
+}
+
+function onPointerMove(e){
+  if(isMobile || isReduced) return;
+  if(e.pointerType === 'touch') return;
+  px = e.clientX; py = e.clientY;
+  schedulePointer();
+}
+function onViewportChange(){
+  forceDraw();
+  if(px !== null) schedulePointer();
+}
+window.addEventListener('pointermove', onPointerMove, {passive:true});
+window.addEventListener('resize', onViewportChange, {passive:true});
+window.addEventListener('scroll', onViewportChange, {passive:true});
+window.addEventListener('pageshow', onViewportChange);
+
+function handleMobileChange(e){
+  isMobile = e.matches;
+  scrubEnabled = !isMobile && !isReduced;
+  applyPlayback();
+  forceDraw();
+}
+function handleReducedChange(e){
+  isReduced = e.matches;
+  scrubEnabled = !isMobile && !isReduced;
+  applyPlayback();
+}
+if(mqMobile.addEventListener){
+  mqMobile.addEventListener('change', handleMobileChange);
+  mqReduced.addEventListener('change', handleReducedChange);
+} else {
+  mqMobile.addListener(handleMobileChange);
+  mqReduced.addListener(handleReducedChange);
+}
+
+function applyPlayback(){
+  if(isMobile){
+    video.loop = true;
+    if(isReduced){ video.pause(); }
+    else {
+      var p = video.play();
+      if(p && typeof p.catch === 'function') p.catch(function(){});
     }
-    return false;
-  }
-
-  function buildMatte() {
-    var geo = getGeometry();
-    if (!geo) return;
-
-    if (matte.width !== canvas.width || matte.height !== canvas.height) {
-      matte.width = canvas.width;
-      matte.height = canvas.height;
-    }
-
-    var dpr = canvas.width / geo.W;
-
-    mctx.setTransform(1, 0, 0, 1, 0, 0);
-    mctx.globalCompositeOperation = 'source-over';
-    mctx.clearRect(0, 0, matte.width, matte.height);
-
-    mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    mctx.save();
-    mctx.translate(geo.dx, geo.dy);
-    mctx.scale(geo.scale, geo.scale);
-
-    mctx.filter = 'blur(0.7px)';
-    mctx.fillStyle = '#ffffff';
-    mctx.fill(characterPath);
-
-    mctx.filter = 'none';
-    mctx.strokeStyle = '#ffffff';
-    mctx.lineJoin = 'round';
-    mctx.lineCap = 'round';
-
-    mctx.lineWidth = 8;
-    mctx.stroke(tubeThin);
-
-    mctx.lineWidth = 20;
-    mctx.stroke(tubeThick);
-
-    mctx.restore();
-    mctx.filter = 'none';
-  }
-
-  function draw() {
-    if (!canvas.width || !canvas.height) return;
-
-    var geo = getGeometry();
-    if (!geo) return;
-
-    var source = null;
-
-    if (video.readyState >= 2 && video.videoWidth > 0) {
-      source = video;
-      everDrewVideo = true;
-    } else if (!everDrewVideo && posterReady) {
-      source = poster;
-    }
-
-    if (!source) return;
-
-    var dpr = canvas.width / geo.W;
-
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    try {
-      ctx.drawImage(source, geo.dx, geo.dy, geo.dw, geo.dh);
-    } catch (e) {
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      return;
-    }
-
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.globalCompositeOperation = 'destination-in';
-    ctx.drawImage(matte, 0, 0);
-    ctx.globalCompositeOperation = 'source-over';
-  }
-
-  var usingRVFC = typeof video.requestVideoFrameCallback === 'function';
-
-  function onVideoFrame() {
-    draw();
-    video.requestVideoFrameCallback(onVideoFrame);
-  }
-
-  if (usingRVFC) {
-    video.requestVideoFrameCallback(onVideoFrame);
-  }
-
-  var lastRafTime = -1;
-
-  function rafLoop() {
-    if (!usingRVFC) {
-      if (!video.seeking && video.currentTime !== lastRafTime) {
-        lastRafTime = video.currentTime;
-        draw();
-      }
-    }
-    requestAnimationFrame(rafLoop);
-  }
-
-  requestAnimationFrame(rafLoop);
-
-  var pointerX = null;
-  var pointerY = null;
-  var seekRaf = null;
-
-  function angularDistance(a, b) {
-    var d = Math.abs(a - b);
-    if (d > Math.PI) d = Math.PI * 2 - d;
-    return d;
-  }
-
-  function scheduleSeek() {
-    if (seekRaf === null) {
-      seekRaf = requestAnimationFrame(processSeek);
+  } else {
+    video.loop = false;
+    video.pause();
+    if(video.readyState >= 1 && video.currentTime === 0){
+      try { video.currentTime = 1/240; } catch(e){}
     }
   }
+}
 
-  function processSeek() {
-    seekRaf = null;
+function tryBlobUpgrade(){
+  if(isMobile || blobTried) return;
+  if(window.location.protocol === 'file:') return;
+  blobTried = true;
 
-    if (mqMobile.matches) return;
-    if (pointerX === null || pointerY === null) return;
-    if (video.seeking) return;
-    if (video.readyState < 1) return;
-    if (!isFinite(video.duration) || video.duration <= 0) return;
+  fetch('./public/hero-scrub.mp4')
+    .then(function(r){ if(!r.ok) throw new Error('no local'); return r.blob(); })
+    .then(function(blob){
+      var url = URL.createObjectURL(blob);
+      var t = video.currentTime;
+      video.src = url;
+      video.load();
+      video.addEventListener('loadedmetadata', function once(){
+        video.removeEventListener('loadedmetadata', once);
+        if(isFinite(video.duration)){
+          try { video.currentTime = Math.min(t, video.duration - SAFE_TAIL); } catch(e){}
+        }
+        applyPlayback();
+      });
+    })
+    .catch(function(){});
+}
 
-    var geo = getGeometry();
-    if (!geo) return;
+function init(){
+  startLoops();
+  applyPlayback();
+  markReady();
+  setTimeout(tryBlobUpgrade, 1500);
+}
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 
-    var eyeX = geo.rect.left + geo.W / 2 + (EYE_X - SRC_W / 2) * geo.scale;
-    var eyeY = geo.rect.top + geo.H / 2 + (EYE_Y - SRC_H / 2) * geo.scale;
-
-    var ddx = pointerX - eyeX;
-    var ddy = pointerY - eyeY;
-
-    if (Math.sqrt(ddx * ddx + ddy * ddy) < 8) return;
-
-    var angle = Math.atan2(ddy, ddx);
-    if (angle < 0) angle += Math.PI * 2;
-
-    var bestTime = CAL[0][1];
-    var bestDist = Infinity;
-
-    for (var i = 0; i < CAL.length; i++) {
-      var d = angularDistance(angle, CAL[i][0]);
-      if (d < bestDist) {
-        bestDist = d;
-        bestTime = CAL[i][1];
-      }
-    }
-
-    var target = bestTime + 1 / 240;
-    var maxTime = Math.max(0, video.duration - 1 / 24);
-    if (target > maxTime) target = maxTime;
-    if (target < 0) target = 0;
-
-    if (Math.abs(video.currentTime - target) > 1 / 48) {
-      try { video.currentTime = target; } catch (e) {}
-    }
-  }
-
-  function applyMode() {
-    var isMobile = mqMobile.matches;
-    var reduced = mqReduce.matches;
-    var src = isMobile ? sources.mobile : sources.desktop;
-
-    if (activeSrc !== src) {
-      activeSrc = src;
-      video.src = src;
-      try { video.load(); } catch (e) {}
-    }
-
-    if (isMobile) {
-      video.loop = true;
-      if (reduced) {
-        video.pause();
-      } else {
-        var p = video.play();
-        if (p && typeof p.catch === 'function') p.catch(function () {});
-      }
-    } else {
-      video.loop = false;
-      video.pause();
-    }
-  }
-
-  window.addEventListener('pointermove', function (e) {
-    if (mqMobile.matches) return;
-    pointerX = e.clientX;
-    pointerY = e.clientY;
-    scheduleSeek();
-  }, { passive: true });
-
-  window.addEventListener('resize', function () {
-    resizeCanvas();
-    draw();
-    if (!mqMobile.matches) scheduleSeek();
-  }, { passive: true });
-
-  window.addEventListener('scroll', function () {
-    if (!mqMobile.matches) scheduleSeek();
-  }, { passive: true });
-
-  window.addEventListener('pageshow', function () {
-    resizeCanvas();
-    draw();
-    if (!mqMobile.matches) scheduleSeek();
-  });
-
-  video.addEventListener('loadeddata', function () { draw(); });
-  video.addEventListener('loadedmetadata', function () { draw(); });
-  video.addEventListener('canplay', function () { draw(); });
-
-  video.addEventListener('seeked', function () {
-    draw();
-    if (!mqMobile.matches && pointerX !== null) scheduleSeek();
-  });
-
-  var onModeChange = function () {
-    applyMode();
-    resizeCanvas();
-    draw();
-  };
-
-  if (typeof mqMobile.addEventListener === 'function') {
-    mqMobile.addEventListener('change', onModeChange);
-    mqReduce.addEventListener('change', onModeChange);
-  } else if (typeof mqMobile.addListener === 'function') {
-    mqMobile.addListener(onModeChange);
-    mqReduce.addListener(onModeChange);
-  }
-
-  resizeCanvas();
-
-  resolveSources().then(function () {
-    applyMode();
-    resizeCanvas();
-    draw();
-  }).catch(function () {
-    applyMode();
-    resizeCanvas();
-    draw();
-  });
 })();
 </script>
-
 </body>
 </html>
