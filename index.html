@@ -23,22 +23,6 @@ body{margin:0;background:#06122b;color:#fff;font-family:'DM Sans',Arial,sans-ser
 /* 前景角色层 */
 #hero-character{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;display:block}
 
-/* 右下角戴眼镜黑发小男孩（装饰） */
-.hero__boy{
-  position:absolute;
-  right:2.58vw;
-  bottom:7.7vh;
-  width:8vw;
-  max-width:120px;
-  min-width:70px;
-  z-index:4;
-  pointer-events:none;
-  user-select:none;
-}
-@media (max-width:700px){
-  .hero__boy{right:22px;bottom:96px;width:70px;}
-}
-
 /* 导航 */
 .hero__nav{position:relative;z-index:3;display:flex;flex-direction:row;align-items:center;justify-content:space-between;padding:2.15vw 2.58vw;font-family:'DM Sans',Arial,sans-serif;font-weight:400;font-size:1.13vw;line-height:1.2;text-transform:uppercase;color:#fff;pointer-events:none;user-select:none}
 .hero__nav-left{display:flex;flex-direction:row;align-items:center;gap:.35vw;white-space:nowrap;flex-shrink:0}
@@ -64,7 +48,7 @@ body{margin:0;background:#06122b;color:#fff;font-family:'DM Sans',Arial,sans-ser
 .hero__desc-line{display:block}
 .hero__desc-line--indent{padding-left:3.6vw}
 
-/* ---------- ABOUT 弹窗 ---------- */
+/* ---------- ABOUT 弹窗（仅打开时可见） ---------- */
 .about-panel{
   position:absolute;
   inset:0;
@@ -151,21 +135,6 @@ body{margin:0;background:#06122b;color:#fff;font-family:'DM Sans',Arial,sans-ser
   <!-- 2. 前景角色 canvas -->
   <canvas id="hero-character" width="1920" height="1080"></canvas>
 
-  <!-- 右下角小男孩（装饰） -->
-  <div class="hero__boy" aria-hidden="true">
-    <svg viewBox="0 0 120 120" width="100%" height="100%">
-      <path d="M30,50 Q30,20 60,20 Q90,20 90,50 Q90,35 60,35 Q30,35 30,50 Z" fill="#1a1a1a"/>
-      <circle cx="60" cy="65" r="28" fill="#f5d0b5"/>
-      <path d="M32,50 Q35,30 60,30 Q85,30 88,50 Q85,40 60,40 Q35,40 32,50 Z" fill="#1a1a1a"/>
-      <circle cx="48" cy="60" r="10" fill="none" stroke="#222" stroke-width="3"/>
-      <circle cx="72" cy="60" r="10" fill="none" stroke="#222" stroke-width="3"/>
-      <line x1="58" y1="60" x2="62" y2="60" stroke="#222" stroke-width="3"/>
-      <circle cx="48" cy="60" r="3" fill="#222"/>
-      <circle cx="72" cy="60" r="3" fill="#222"/>
-      <path d="M50,78 Q60,88 70,78" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-  </div>
-
   <!-- 3. 导航 -->
   <header class="hero__nav">
     <div class="hero__nav-left"><span class="hero__nav-star">✦</span><span>OLIVIA STUDIO</span></div>
@@ -201,13 +170,13 @@ body{margin:0;background:#06122b;color:#fff;font-family:'DM Sans',Arial,sans-ser
     <span class="hero__desc-line hero__desc-line--indent">CLEAN, INTUITIVE DIGITAL PRODUCTS.</span>
   </p>
 
-  <!-- ABOUT 弹窗 -->
+  <!-- ABOUT 弹窗（默认隐藏，点 ABOUT 才出现，里面才有小男孩） -->
   <div id="about-panel" class="about-panel" role="dialog" aria-modal="true" aria-labelledby="about-title">
     <div class="about-panel__inner">
       <h2 class="about-panel__title" id="about-title">ABOUT</h2>
 
       <div class="about-panel__row">
-        <!-- 戴眼镜黑发小男孩 -->
+        <!-- 戴眼镜黑发小男孩（仅弹窗内） -->
         <div class="about-panel__boy" aria-hidden="true">
           <svg viewBox="0 0 120 120">
             <path d="M30,50 Q30,20 60,20 Q90,20 90,50 Q90,35 60,35 Q30,35 30,50 Z" fill="#1a1a1a"/>
@@ -238,8 +207,8 @@ body{margin:0;background:#06122b;color:#fff;font-family:'DM Sans',Arial,sans-ser
 (function(){
 'use strict';
 
-/* ========== ABOUT 弹窗 ========== */
-var navAbout = document.getElementById('nav-about');
+/* ========== ABOUT 弹窗开关 ========== */
+var navAbout   = document.getElementById('nav-about');
 var aboutPanel = document.getElementById('about-panel');
 var aboutClose = document.getElementById('about-close');
 
@@ -266,7 +235,7 @@ if(aboutPanel){
   });
 }
 
-/* ========== 原有 hero 逻辑 ========== */
+/* ========== 原有 hero 视频 / 眼球跟随逻辑 ========== */
 var VIDEO_W = 1920, VIDEO_H = 1080;
 var EYE_X = 922, EYE_Y = 507;
 var CENTER_X = 960, CENTER_Y = 540;
@@ -288,14 +257,14 @@ var ANGLE_SAMPLES = [
   [5.962517,1.70833],[6.064804,1.75],[6.194798,1.79167]
 ];
 
-var video = document.getElementById('hero-video');
+var video  = document.getElementById('hero-video');
 var canvas = document.getElementById('hero-character');
-var ctx = canvas.getContext('2d');
+var ctx    = canvas.getContext('2d');
 
-var mqMobile = window.matchMedia('(max-width:700px)');
+var mqMobile  = window.matchMedia('(max-width:700px)');
 var mqReduced = window.matchMedia('(prefers-reduced-motion:reduce)');
 
-var isMobile = mqMobile.matches;
+var isMobile  = mqMobile.matches;
 var isReduced = mqReduced.matches;
 var scrubEnabled = !isMobile && !isReduced;
 
@@ -369,13 +338,10 @@ function markReady(){
   if(video.videoWidth > 0 && video.readyState >= 2){
     var first = !hasFrame;
     hasFrame = true;
-
     if(!isMobile && video.currentTime === 0 && video.readyState >= 1){
       try { video.currentTime = 1/240; } catch(e){}
     }
-    if(first){ forceDraw(); }
-    else { maybeDraw(); }
-
+    if(first){ forceDraw(); } else { maybeDraw(); }
     if(px !== null) schedulePointer();
   }
 }
